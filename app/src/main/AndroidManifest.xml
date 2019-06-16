@@ -19,6 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".EditNoteActivity" />
+        <activity android:name=".GeneralSettingsActivity" />
+        <activity android:name=".CurrentNoteSettings"></activity>
     </application>
 
 </manifest>
