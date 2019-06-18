@@ -1,23 +1,33 @@
 package gt.com.gtnote.Models;
 
-import java.sql.Timestamp;
-
 import gt.com.gtnote.Models.SubModels.Color;
 
 public class NoteMeta
 {
+    private int noteId;
     private String title;
     private Color color;
-    private Timestamp creationTime;
-    private Timestamp lastEditTime;
+    private long creationTime;  // unix timestamp
+    private long lastEditTime;  // unix timestamp
     //private int noteType
-    private int contentSize;
-
-    public NoteMeta()
-    {
-
+    private int contentSize;  // todo: provide this value
+    
+    NoteMeta(int noteId, String title, Color color, long creationTime, long lastEditTime) {
+        this.noteId = noteId;
+        this.title = title;
+        this.color = color;
+        this.creationTime = creationTime;
+        this.lastEditTime = lastEditTime;
     }
-
+    
+    public int getNoteId() {
+        return noteId;
+    }
+    
+    public void setNoteId(int noteId) {
+        this.noteId = noteId;
+    }
+    
     public String getTitle() {
         return title;
     }
@@ -34,19 +44,19 @@ public class NoteMeta
         this.color = color;
     }
 
-    public Timestamp getCreationTime() {
+    public long getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(Timestamp creationTime) {
+    public void setCreationTime(long creationTime) {
         this.creationTime = creationTime;
     }
 
-    public Timestamp getLastEditTime() {
+    public long getLastEditTime() {
         return lastEditTime;
     }
 
-    public void setLastEditTime(Timestamp lastEditTime) {
+    public void setLastEditTime(long lastEditTime) {
         this.lastEditTime = lastEditTime;
     }
 

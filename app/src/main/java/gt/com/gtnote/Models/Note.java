@@ -5,13 +5,7 @@ public class Note
     private NoteContent noteContent;
     private NoteMeta noteMeta;
 
-    public Note()
-    {
-        noteContent = new NoteContent();
-        noteMeta = new NoteMeta();
-    }
-
-    public Note(NoteContent noteContent, NoteMeta noteMeta)
+    Note(NoteMeta noteMeta, NoteContent noteContent)
     {
         this.noteContent = noteContent;
         this.noteMeta = noteMeta;
