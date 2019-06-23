@@ -2,21 +2,28 @@ package gt.com.gtnote.Models;
 
 import android.os.Build;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import gt.com.gtnote.Models.SubModels.Color;
 
 public class NoteManager {
+    
+    private static final String TAG = "GTNOTE";
     
     private static final String META_FILE_NAME = "meta.json";
     
     private FileIO fileIO;
     private NoteMetaParser metaParser = new NoteMetaParser();
-    private ArrayList<Note> notes = new ArrayList<>();
+    private LinkedList<Note> notes = new LinkedList<>();
     
     public NoteManager(FileIO fileIO) throws JSONException {
         this.fileIO = fileIO;
@@ -28,21 +35,21 @@ public class NoteManager {
      * and stores them internally as Note objects.
      */
     private void loadAll() throws JSONException {
-        
-        if (fileIO.fileExists(META_FILE_NAME)) {
-            String allMetasString = fileIO.read(META_FILE_NAME);  // meta data of all notes is stored in one file (faster reading)
-            JSONArray allMetas = new JSONArray(allMetasString);  // could throw JSONException
     
-            for (int i = 0; i < allMetas.length(); i++) {
+        if (!fileIO.fileExists(META_FILE_NAME)) {
+            createMetaFile();
+        }
         
-                JSONObject meta = allMetas.getJSONObject(i);
-                Note note = createNote(meta);
-                notes.add(note);
-            }
-        } else {
-            // create meta file
-            String source = new JSONArray().toString();  // empty array
-            fileIO.write(META_FILE_NAME, source);
+        String allMetasString = fileIO.read(META_FILE_NAME);  // meta data of all notes is stored in one file (faster reading)
+        JSONArray allMetas = new JSONArray(allMetasString);  // could throw JSONException
+        
+        Log.d(TAG, String.format("Loaded %d metas from string '''%s'''", allMetas.length(), allMetasString));
+
+        for (int i = 0; i < allMetas.length(); i++) {
+    
+            JSONObject meta = allMetas.getJSONObject(i);
+            Note note = createNote(meta);
+            notes.add(note);
         }
     }
     
@@ -52,19 +59,83 @@ public class NoteManager {
      * @return a fully initialized Note object (content will load when queried)
      * @throws JSONException if the json string couldn't be parsed
      */
-    Note createNote(JSONObject metaJSONObject) throws JSONException {
+    private Note createNote(JSONObject metaJSONObject) throws JSONException {
         
         NoteMeta meta = metaParser.loadMeta(metaJSONObject);  // could throw JSONException
         
         // meta tells where the content lies
         FilePointer contentFilePointer = new FilePointer(filePathFromNoteId(meta.getNoteId()), fileIO);
-        NoteContent content = new NoteContent(contentFilePointer);  // this will not read the content until queried
+        NoteContent content = new LazyNoteContent(contentFilePointer);
         
         return new Note(meta, content);
     }
     
-    public ArrayList<Note> getAll() {
+    /**
+     * Use this if you want to create a new Note object that does not exist as a file yet.<br>
+     * Creates a Note object with a new ID
+     * and adds it to the internal list (received with .getAll()) automatically.<br>
+     * The ID is picked by choosing the lowest natural number (incl. 0) available
+     * @return a new Note object with empty fields (besides a unique id)
+     */
+    public Note createNote() {
+        NoteMeta meta = new NoteMeta(
+                getLowestAvailableId(),
+                "unnamed",
+                Color.UNKNOWN,
+                System.currentTimeMillis(),
+                System.currentTimeMillis()
+        );
+        NoteContent content = new PresentNoteContent(new SpannableString(""));
+        Note note = new Note(meta, content);
+        insertNote(note);
+        return note;
+    }
+    
+    private int getLowestAvailableId() {
+        // assuming that notes are ordered by their ID (Note.getNoteId) (ascending)
+        int lowestId = 0;
+        for (Note note: notes) {
+            int id = note.getNoteMeta().getNoteId();
+            if (id > lowestId) {
+                return lowestId;
+            } else if (id == lowestId) {
+                lowestId = id + 1;
+            } else {
+                Log.w(TAG, "getLowestAvailableId: Strange ordering detected!");
+            }
+        }
+        return lowestId;
+    }
+    
+    /**
+     * Inserts the note into the internal list so that the list ist ordered by IDs (ascending).
+     * @param note the note to insert
+     */
+    private void insertNote(Note note) {
+        int id = note.getNoteMeta().getNoteId();
+        int index = 0;
+        for (Note otherNote: notes) {
+            if (otherNote.getNoteMeta().getNoteId() > id) {
+                notes.add(index, note);
+                return;
+            }
+            index++;
+        }
+        notes.add(note);  // no element with a higher ID was found (-> note has the highest id)
+    }
+    
+    public List<Note> getAll() {
         return notes;
+    }
+    
+    public Note getById(int noteId) {
+        // TODO: do a binary search? (but then LinkedList is wrong data structure, but LinkedList is good for inserting...)
+        for (Note note: notes) {
+            if (note.getNoteMeta().getNoteId() == noteId) {
+                return note;
+            }
+        }
+        return null;
     }
     
     public void save(Note note) throws JSONException {
@@ -72,26 +143,55 @@ public class NoteManager {
         saveContent(note);  // also needs to access meta
     }
     
+    /**
+     * Creates meta file if not existent. Updates meta object file if existent, otherwise adds one.
+     * @param meta
+     * @throws JSONException
+     */
     private void saveMeta(NoteMeta meta) throws JSONException {
-        // update new meta in meta file
-        
-        // TODO: takes linear time -> make mapping for const. time, so that it's still fast with many notes
+        // TODO: takes linear time -> make mapping for const. time?
     
+        int length = 0;
+        for (Note note: notes) {
+            length++;
+        }
+        Log.d(TAG, String.format("saveMetas: %d internal note objects", length));
+        
+        if (!fileIO.fileExists(META_FILE_NAME)) {
+            Log.w(TAG, "saveMeta: Meta file was deleted since NoteManager instance was created.");
+            createMetaFile();
+        }
+        
         String allMetasString = fileIO.read(META_FILE_NAME);
         JSONArray allMetas = new JSONArray(allMetasString);
+        
+        JSONObject metaJSONObject = metaParser.dumpMeta(meta);  // may throw JSONException
+        
+        // if meta with id is already in this list: update it.
+        // otherwise, add a new entry
+        
+        boolean metaFound = false;
     
         for (int i = 0; i < allMetas.length(); i++) {
-            JSONObject metaJSONObject = allMetas.getJSONObject(i);
-            NoteMeta otherMeta = metaParser.loadMeta(metaJSONObject);
+            JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
+            NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
         
             if (otherMeta.getNoteId() == meta.getNoteId()) {
-                metaJSONObject = metaParser.dumpMeta(meta);  // may throw JSONException
                 allMetas.put(i, metaJSONObject);
+                metaFound = true;
                 break;
             }
         }
+        
+        if (!metaFound) {
+            // add a new entry
+            allMetas.put(metaJSONObject);
+        }
     
         allMetasString = allMetas.toString();
+    
+        Log.d(TAG, String.format("saveMetas: '''%s'''", allMetasString));
+        
         fileIO.write(META_FILE_NAME, allMetasString);
     }
     
@@ -110,7 +210,23 @@ public class NoteManager {
         fileIO.write(contentFilePath, source);
     }
     
+    /**
+     * Creates the meta file with an empty JSON array.
+     */
+    private void createMetaFile() {
+        String emptyJSONArrayString = new JSONArray().toString();
+        fileIO.write(META_FILE_NAME, emptyJSONArrayString);
+    }
+    
     private String filePathFromNoteId(int noteId) {
         return String.format("%d.html", noteId);
+    }
+    
+    public void deleteAllFiles(String confirmationPhrase) {
+        if (confirmationPhrase.equals("I know what I'm doing.")) {
+            for (String fileOrDirName: fileIO.list()) {
+                fileIO.delete(fileOrDirName);
+            }
+        }
     }
 }

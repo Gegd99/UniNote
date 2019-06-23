@@ -7,8 +7,8 @@ public class NoteMeta
     private int noteId;
     private String title;
     private Color color;
-    private long creationTime;  // unix timestamp
-    private long lastEditTime;  // unix timestamp
+    private long creationTime;  // unix timestamp (in milliseconds)
+    private long lastEditTime;  // unix timestamp (in milliseconds)
     //private int noteType
     private int contentSize;  // todo: provide this value
     

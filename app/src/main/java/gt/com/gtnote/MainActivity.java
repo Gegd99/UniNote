@@ -5,6 +5,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +23,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import gt.com.gtnote.Models.FileIO;
+import gt.com.gtnote.Models.Note;
+import gt.com.gtnote.Models.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
+import gt.com.gtnote.Models.NoteMeta;
+import gt.com.gtnote.Models.SubModels.Color;
 
 public class MainActivity extends AppCompatActivity {
+    
+    private static final String TAG = "GTNOTE";
     
     private NoteManager noteManager;
 
@@ -40,7 +49,16 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                
+                String message = "<no test result>";
+                try {
+                    message = test();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    message = "Error while test was running, see log";
+                }
+    
+                Snackbar.make(view, message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -51,6 +69,60 @@ public class MainActivity extends AppCompatActivity {
             noteManager = new NoteManager(new AndroidFileIO());
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+    
+    private String test() throws JSONException {
+        
+        String titleString = "Hello World";
+        String contentString = "Einen schönen guten Morgen!";
+        
+        // create a NoteManager instance for this test
+        NoteManager noteManager = new NoteManager(new AndroidFileIO());
+        
+        Note note = noteManager.createNote();
+        NoteMeta meta = note.getNoteMeta();
+        NoteContent content = note.getNoteContent();
+        
+        // set data
+        meta.setColor(Color.BLUE);
+        meta.setTitle(titleString);
+        content.setSpanned(new SpannableString(contentString));
+        
+        // write to file
+        noteManager.save(note);
+        
+        // remember id
+        int id = meta.getNoteId();
+    
+        // create another NoteManager instance
+        noteManager = new NoteManager(new AndroidFileIO());
+        
+        // get note instance and read content from file
+        note = noteManager.getById(id);
+        if (note != null) {
+            Spanned spanned = note.getNoteContent().getSpanned();  // reads from file
+            String loadedContentString = spanned.toString();
+            Log.d(TAG, String.format("test: loaded content string: '''%s'''", loadedContentString));
+    
+            if (loadedContentString.equals(contentString)) {
+                return "Test was successfull: contents match!";
+            }
+            
+            if (loadedContentString.contains(contentString)) {
+                return "Test was successfull: contents match not fully but string is contained (probably due to formatting).";
+            }
+    
+            return "Test failed: loaded content is: "+loadedContentString;
+        } else {
+            int length = 0;
+            for (Note n : noteManager.getAll()) {
+                length++;
+            }
+            return String.format(
+                    "Test failed: note with same id could not be found (notes: %d)",
+                    length
+            );
         }
     }
 
@@ -136,6 +208,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean fileExists(String path) {
             return new File(getFilesDir(), path).exists();
+        }
+    
+        @Override
+        public void delete(String path) {
+            deleteFile(path);
+        }
+    
+        @Override
+        public String[] list() {
+            return getFilesDir().list();
         }
     }
 }
