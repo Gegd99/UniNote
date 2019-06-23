@@ -12,40 +12,57 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import gt.com.gtnote.Interfaces.OnNoteListener;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.R;
 
 public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder>
 {
 
-    private List<Note> mNotes = new ArrayList<>();
-    private Context mContext;
+    private List<Note> mNotes;
+    private OnNoteListener mOnNoteListener;
 
-    public NotesRecyclerViewAdapter(List<Note> notes, Context context)
+    public NotesRecyclerViewAdapter(List<Note> notes, OnNoteListener onNoteListener)
     {
-        mNotes = notes;
-        mContext = context;
+        if (notes == null)
+        {
+            mNotes = new ArrayList<>();
+        }
+        else
+        {
+            mNotes = notes;
+        }
+        mOnNoteListener = onNoteListener;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener
     {
         TextView title;
         TextView description;
         RelativeLayout layout;
+        OnNoteListener onNoteListener;
 
-        public ViewHolder(View noteView)
+        public ViewHolder(View noteView, OnNoteListener onNoteListener)
         {
             super(noteView);
             title = noteView.findViewById(R.id.note_in_list_title);
             description = noteView.findViewById(R.id.note_in_list_description);
             layout = noteView.findViewById(R.id.note_in_list_layout);
+            this.onNoteListener = onNoteListener;
+
+            noteView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onNoteListener.onNoteClick(getAdapterPosition());
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_note_in_list, parent, false);
-        ViewHolder holder = new ViewHolder(view);
+        ViewHolder holder = new ViewHolder(view, mOnNoteListener);
         return holder;
     }
 
@@ -57,6 +74,6 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mNotes.size();
     }
 }

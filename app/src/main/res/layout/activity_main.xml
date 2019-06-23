@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-        <variable
-            name="mainViewModel"
-            type="gt.com.gtnote.ViewModels.MainActivityViewModel"/>
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -41,14 +38,6 @@
 
             <include layout="@layout/content_main" />
 
-            <TextView
-                android:id="@+id/exampleText"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:background="@color/colorPrimaryDark"/>
-
-
-
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
@@ -60,4 +49,4 @@
         </LinearLayout>
     </ScrollView>
 
-</layout>
+</RelativeLayout>

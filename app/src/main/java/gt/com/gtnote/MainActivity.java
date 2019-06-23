@@ -2,8 +2,8 @@ package gt.com.gtnote;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,14 +22,11 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
 
+import gt.com.gtnote.Adapters.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
+import gt.com.gtnote.Interfaces.OnNoteListener;
 import gt.com.gtnote.Models.FileIO;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteContent;
@@ -39,14 +36,13 @@ import gt.com.gtnote.ViewModels.MainActivityViewModel;
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SubModels.Color;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private static final String TAG = "GTNOTE";
 
 
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
-    private TextView mExampleText;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
@@ -62,20 +58,20 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mExampleText = (TextView) findViewById(R.id.exampleText);
         mRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
 
         mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        mMainActivityViewModel.getMessage().observe(this, new Observer<String>() {
+        mMainActivityViewModel.initNotes(this);
+
+        mMainActivityViewModel.getNoteManager().observe(this, new Observer<NoteManager>() {
 
             @Override
-            public void onChanged(@Nullable String s) {
-                mExampleText.setText(s);
+            public void onChanged(@Nullable NoteManager noteManager) {
+                mAdapter.notifyDataSetChanged();
             }
         });
 
-        initNotes();
         initRecyclerView();
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -87,12 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initNotes() {
-        try {
-            noteManager = new NoteManager(new AndroidFileIO());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private void initRecyclerView()
+    {
+        List<Note> notes = mMainActivityViewModel.getNoteManager().getValue().getNotes();
+        mAdapter = new NotesRecyclerViewAdapter(notes, this);
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private String test() throws JSONException {
@@ -101,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         String contentString = "Einen schönen guten Morgen!";
 
         // create a NoteManager instance for this test
-        NoteManager noteManager = new NoteManager(new AndroidFileIO());
+        NoteManager noteManager = new NoteManager(new AndroidFileIO(this));
 
         Note note = noteManager.createNote();
         NoteMeta meta = note.getNoteMeta();
@@ -119,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         int id = meta.getNoteId();
 
         // create another NoteManager instance
-        noteManager = new NoteManager(new AndroidFileIO());
+        noteManager = new NoteManager(new AndroidFileIO(this));
 
         // get note instance and read content from file
         note = noteManager.getById(id);
@@ -149,13 +146,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initRecyclerView()
-    {
-        mAdapter = new NotesRecyclerViewAdapter(noteManager.getNotes(), this);
-        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -173,82 +164,14 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            mMainActivityViewModel.openSettings(this);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    class AndroidFileIO implements FileIO {
-
-        @Override
-        public String read(String filename) {
-
-            String source = null;
-
-            FileInputStream fis = null;
-            try {
-                fis = openFileInput(filename);
-                InputStreamReader isr = new InputStreamReader(fis);
-                BufferedReader br = new BufferedReader(isr);
-                StringBuilder sb = new StringBuilder();
-
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-
-                source = sb.toString();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (fis != null) {
-                    try {
-                        fis.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
-                }
-            }
-
-            return source;
-        }
-
-        @Override
-        public void write(String filename, String source) {
-
-            FileOutputStream fos = null;
-            try {
-                fos = openFileOutput(filename, MODE_PRIVATE);
-                fos.write(source.getBytes());// todo: maybe use source.getBytes("utf-8")?
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
-                }
-            }
-        }
-
-        @Override
-        public boolean fileExists(String path) {
-            return new File(getFilesDir(), path).exists();
-        }
-
-        @Override
-        public void delete(String path) {
-            deleteFile(path);
-        }
-
-        @Override
-        public String[] list() {
-            return getFilesDir().list();
-        }
+    @Override
+    public void onNoteClick(int position) {
+        mMainActivityViewModel.openExistingNote(this, mMainActivityViewModel.getNoteManager().getValue().getNotes().get(position));
     }
 }
