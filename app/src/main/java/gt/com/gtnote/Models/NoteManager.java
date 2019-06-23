@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NoteManager {
     
@@ -112,5 +113,10 @@ public class NoteManager {
     
     private String filePathFromNoteId(int noteId) {
         return String.format("%d.html", noteId);
+    }
+
+    public List<Note> getNotes()
+    {
+        return notes;
     }
 }
