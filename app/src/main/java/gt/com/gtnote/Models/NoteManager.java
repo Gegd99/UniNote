@@ -14,9 +14,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import gt.com.gtnote.Adapters.AndroidFileIO;
 import gt.com.gtnote.Models.SubModels.Color;
 
 public class NoteManager {
+    
+    //TODO: this ugly singleton is just a temporary solution. EditNoteActivity should access a ViewModel
+    private static NoteManager instance;//TODO: remove
+    public static NoteManager getInstance() {//TODO: remove
+        return instance;
+    }
     
     private static final String TAG = "GTNOTE";
 
@@ -29,6 +36,7 @@ public class NoteManager {
     public NoteManager(FileIO fileIO) throws JSONException {
         this.fileIO = fileIO;
         loadAll();
+        NoteManager.instance = this;  //TODO: remove this ugly line of code
     }
     
     /**
@@ -138,7 +146,12 @@ public class NoteManager {
         }
         return null;
     }
-
+    
+    /**
+     * creates or updates respective files
+     * @param note
+     * @throws JSONException
+     */
     public void save(Note note) throws JSONException {
         saveMeta(note.getNoteMeta());
         saveContent(note);  // also needs to access meta
@@ -196,6 +209,10 @@ public class NoteManager {
         fileIO.write(META_FILE_NAME, allMetasString);
     }
     
+    /**
+     * creates or updates respective content file
+     * @param note
+     */
     private void saveContent(Note note) {
         
         Spanned spanned = note.getNoteContent().getSpanned();

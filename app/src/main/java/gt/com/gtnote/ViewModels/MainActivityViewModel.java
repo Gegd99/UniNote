@@ -18,6 +18,11 @@ import gt.com.gtnote.Models.NoteManager;
 
 public class MainActivityViewModel extends ViewModel
 {
+    private final int EDIT_NOTE_TYPE_ID = 0;
+    private final int PREVIEW_NOTE_TYPE_ID = 1;
+    
+    private final int NOTE_NOT_EXISTENT_ID = -1;
+    
     private MutableLiveData<NoteManager> mNoteManager;
 
     public MainActivityViewModel()
@@ -37,16 +42,18 @@ public class MainActivityViewModel extends ViewModel
     {
         Context context = view.getContext();
         Intent intent = new Intent(context, EditNoteActivity.class);
-        intent.putExtra("typeId", 0);
+        intent.putExtra("typeId", EDIT_NOTE_TYPE_ID);
+        intent.putExtra("noteId", NOTE_NOT_EXISTENT_ID);  //TODO: should be passed to the EditNoteActivityViewModel
         context.startActivity(intent);
     }
 
     public void openExistingNote(Context context, Note note)
     {
         Intent intent = new Intent(context, EditNoteActivity.class);
-        intent.putExtra("typeId", 1);
+        intent.putExtra("typeId", PREVIEW_NOTE_TYPE_ID);
         //TODO: When opening an existing Note, this note should be passed to the EditNoteActivityViewModel
         //intent.putExtra("note", note);
+        intent.putExtra("noteId", note.getNoteMeta().getNoteId());  //TODO: should be passed to the EditNoteActivityViewModel
         context.startActivity(intent);
     }
 
