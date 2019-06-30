@@ -1,5 +1,8 @@
 package gt.com.gtnote;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -14,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +48,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private TextView noteTextView;
     private LinearLayout noteEditLayout;
     private EditText noteEditText;
+    private EditText noteTitleEditText;
+    private Button noteSettingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +108,8 @@ public class EditNoteActivity extends AppCompatActivity {
         noteTextView = findViewById(R.id.noteTextView);
         noteEditLayout = findViewById(R.id.noteEditLayout);
         noteEditText = findViewById(R.id.noteEditText);
+        noteTitleEditText = findViewById(R.id.noteTitleEditText);
+        noteSettingsButton = findViewById(R.id.noteSettingsButton);
         
         noteTextView.setTextIsSelectable(true);
         
@@ -132,6 +140,34 @@ public class EditNoteActivity extends AppCompatActivity {
                 return false;
             }
         });
+        
+        noteSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+    
+                Intent intent = new Intent(getApplicationContext(), CurrentNoteSettings.class);
+                //todo: intent.putExtra("colorHue", note.getNoteMeta().getColor().hue);
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                float colorHue = data.getFloatExtra("colorHue", 0);
+                float[] hsv = new float[]{
+                        colorHue,
+                        1,
+                        1
+                };
+                int noteColor = Color.HSVToColor(hsv);
+                //todo: note.getNoteMeta().setColor(Color.red(noteColor), Color.green(noteColor), Color.blue(noteColor));
+                Toast.makeText(this, String.format("rgb: (%d, %d, %d)", Color.red(noteColor), Color.green(noteColor), Color.blue(noteColor)), Toast.LENGTH_LONG).show();
+                noteSettingsButton.getBackground().setColorFilter(noteColor, PorterDuff.Mode.MULTIPLY);
+            }
+        }
     }
     
     /**

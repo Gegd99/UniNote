@@ -23,7 +23,7 @@
             android:name=".EditNoteActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".GeneralSettingsActivity" />
-        <activity android:name=".CurrentNoteSettings"></activity>
+        <activity android:name=".CurrentNoteSettings" android:theme="@style/Theme.AppCompat.Dialog" android:excludeFromRecents="true"/>
     </application>
 
 </manifest>
