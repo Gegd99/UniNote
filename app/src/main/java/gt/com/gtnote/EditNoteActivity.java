@@ -3,14 +3,10 @@ package gt.com.gtnote;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -49,6 +45,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private LinearLayout noteEditLayout;
     private EditText noteEditText;
     private EditText noteTitleEditText;
+    private TextView noteTitleTextView;
     private Button noteSettingsButton;
 
     @Override
@@ -83,14 +80,13 @@ public class EditNoteActivity extends AppCompatActivity {
                     Log.d(TAG, "opened EditNoteActivity with type=edit, id="+noteId);
                     
                     setTitle("Edit Note");
-                    editText(note.getNoteContent().getSpanned());
+                    editMode();
                     
                     break;
                 case PREVIEW_NOTE_TYPE_ID:
                     Log.d(TAG, "opened EditNoteActivity with type=preview, id="+noteId);
                     
-                    setTitle("Preview Note");
-                    displayText(note.getNoteContent().getSpanned());
+                    previewMode();
                     
                     break;
                 default:
@@ -109,6 +105,7 @@ public class EditNoteActivity extends AppCompatActivity {
         noteEditLayout = findViewById(R.id.noteEditLayout);
         noteEditText = findViewById(R.id.noteEditText);
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
+        noteTitleTextView = findViewById(R.id.noteTitleTextView);
         noteSettingsButton = findViewById(R.id.noteSettingsButton);
         
         noteTextView.setTextIsSelectable(true);
@@ -122,7 +119,7 @@ public class EditNoteActivity extends AppCompatActivity {
                     Log.d(TAG, "onDoubleTap: switch to edit mode");
                     
                     // go to edit mode
-                    editText(note.getNoteContent().getSpanned());
+                    editMode();
                     
                     //TODO: maybe use this later to position the cursor in edit text
                     Log.d(TAG, "Raw event: " + event.getAction() + ", (" + event.getRawX() + ", " + event.getRawY() + ")");
@@ -187,18 +184,20 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     }
     
-    private void displayText(Spanned spanned) {
-        Log.d(TAG, String.format("display text: '''%s'''", spanned.toString()));
+    private void previewMode() {
+        
+        noteTitleTextView.setText(note.getNoteMeta().getTitle());
+        noteTextView.setText(note.getNoteContent().getSpanned());
         
         setLayoutType(PREVIEW_NOTE_TYPE_ID);
-        noteTextView.setText(spanned);
     }
     
-    private void editText(Spanned spanned) {
-        Log.d(TAG, String.format("edit text: '''%s'''", spanned.toString()));
-    
+    private void editMode() {
+        
+        noteTitleEditText.setText(note.getNoteMeta().getTitle());
+        noteEditText.setText(note.getNoteContent().getSpanned());
+        
         setLayoutType(EDIT_NOTE_TYPE_ID);
-        noteEditText.setText(spanned);
     }
     
     @Override
@@ -217,8 +216,8 @@ public class EditNoteActivity extends AppCompatActivity {
             // apply changes
     
             NoteMeta meta = note.getNoteMeta();
-            //meta.setTitle();  //TODO: create view for title editing and read from it here
-            //meta.setColor();  //TODO: create view for color editing and read from it here
+            meta.setTitle(noteTitleEditText.getText().toString());
+            //meta.setColor();  //TODO
             meta.setLastEditTime(System.currentTimeMillis());
             
             note.getNoteContent().setSpanned(new SpannableString(noteEditText.getText()));
@@ -230,7 +229,7 @@ public class EditNoteActivity extends AppCompatActivity {
             Toast.makeText(this, "failed to save note", Toast.LENGTH_SHORT).show();
         }
         
-        displayText(note.getNoteContent().getSpanned());
+        previewMode();
     }
 
     @Override
