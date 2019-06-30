@@ -16,12 +16,14 @@ import gt.com.gtnote.Models.FileIO;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 
+import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.NOTE_NOT_EXISTENT_ID;
+import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
+
 public class MainActivityViewModel extends ViewModel
 {
-    private final int EDIT_NOTE_TYPE_ID = 0;
-    private final int PREVIEW_NOTE_TYPE_ID = 1;
-    
-    private final int NOTE_NOT_EXISTENT_ID = -1;
     
     private MutableLiveData<NoteManager> mNoteManager;
 
@@ -42,8 +44,8 @@ public class MainActivityViewModel extends ViewModel
     {
         Context context = view.getContext();
         Intent intent = new Intent(context, EditNoteActivity.class);
-        intent.putExtra("typeId", EDIT_NOTE_TYPE_ID);
-        intent.putExtra("noteId", NOTE_NOT_EXISTENT_ID);  //TODO: should be passed to the EditNoteActivityViewModel
+        intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, EDIT_NOTE_TYPE_ID);
+        intent.putExtra(MAIN_EDIT_INTENT_NOTE_ID_KEY, NOTE_NOT_EXISTENT_ID);  //TODO: should be passed to the EditNoteActivityViewModel
         context.startActivity(intent);
     }
 

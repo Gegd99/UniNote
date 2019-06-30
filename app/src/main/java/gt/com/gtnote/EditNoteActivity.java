@@ -25,12 +25,15 @@ import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
 
+import static gt.com.gtnote.statics.Constants.COLOR_PICK_INTENT_KEY;
+import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
+
 public class EditNoteActivity extends AppCompatActivity {
     
     private static final String TAG = "GTNOTE";
-
-    private final int EDIT_NOTE_TYPE_ID = 0;
-    private final int PREVIEW_NOTE_TYPE_ID = 1;
     
     private final int NOTE_NOT_EXISTENT_ID = -1;
     
@@ -63,8 +66,8 @@ public class EditNoteActivity extends AppCompatActivity {
     
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            int type = extras.getInt("typeId");
-            int noteId = extras.getInt("noteId");
+            int type = extras.getInt(MAIN_EDIT_INTENT_TYPE_ID_KEY);
+            int noteId = extras.getInt(MAIN_EDIT_INTENT_NOTE_ID_KEY);
             
             // create / load note object
             if (noteId == NOTE_NOT_EXISTENT_ID) {
@@ -153,7 +156,7 @@ public class EditNoteActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                float colorHue = data.getFloatExtra("colorHue", 0);
+                float colorHue = data.getFloatExtra(COLOR_PICK_INTENT_KEY, 0);
                 float[] hsv = new float[]{
                         colorHue,
                         1,
