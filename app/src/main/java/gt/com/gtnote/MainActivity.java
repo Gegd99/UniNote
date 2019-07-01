@@ -1,12 +1,9 @@
 package gt.com.gtnote;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -27,65 +22,70 @@ import java.util.List;
 import gt.com.gtnote.Adapters.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
 import gt.com.gtnote.Interfaces.OnNoteListener;
-import gt.com.gtnote.Models.FileIO;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
-import gt.com.gtnote.ViewModels.MainActivityViewModel;
 
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SubModels.Color;
 
+import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
+import static gt.com.gtnote.statics.Constants.NOTE_NOT_EXISTENT_ID;
+import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
+
 public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private static final String TAG = "GTNOTE";
-
 
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
-    private MainActivityViewModel mMainActivityViewModel;
-    private NoteManager noteManager;
+    private NoteManager m_NoteManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Get all View-Elements by their Id
+        findViews();
+
+        initNotes();
+
+        //TODO: Update mAdapter if anything in NoteManager changes
+
+        attachListeners();
+    }
+
+    /**
+     * Method in every activity, which finds all View-Elements by their Id
+     */
+    private void findViews()
+    {
+        //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        //Button
         mFab = (FloatingActionButton) findViewById(R.id.fab);
+        //Lists
         mRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
+    }
 
-        mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-
-        mMainActivityViewModel.initNotes(this);
-
-        mMainActivityViewModel.getNoteManager().observe(this, new Observer<NoteManager>() {
-
-            @Override
-            public void onChanged(@Nullable NoteManager noteManager) {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        initRecyclerView();
-
+    private void attachListeners()
+    {
+        //ButtonListener for creating a new note
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMainActivityViewModel.createNewNote(view);
+                createNewNote();
             }
         });
 
-    }
-
-    private void initRecyclerView()
-    {
-        List<Note> notes = mMainActivityViewModel.getNoteManager().getValue().getNotes();
+        //Setup RecyclerView
+        List<Note> notes = m_NoteManager.getNotes();
         mAdapter = new NotesRecyclerViewAdapter(notes, this);
         RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
             }
 
             return "Test failed: loaded content is: "+loadedContentString;
-        } else {
+        }
+        else {
             int length = 0;
             for (Note n : noteManager.getAll()) {
                 length++;
@@ -146,7 +147,30 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
+    public void initNotes() {
+        try {
+            m_NoteManager = new NoteManager(new AndroidFileIO(this));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void createNewNote()
+    {
+        Note createdNote = m_NoteManager.createNote();
+        Log.d(TAG, "created new note with id="+createdNote.getNoteMeta().getNoteId());
+
+        openExistingNote(createdNote);
+    }
+
+    private void openExistingNote(Note note)
+    {
+        Intent intent = new Intent(this, EditNoteActivity.class);
+        intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, PREVIEW_NOTE_TYPE_ID);
+        //intent.putExtra("note", note);
+        intent.putExtra("noteId", note.getNoteMeta().getNoteId());  //TODO: should be passed to the EditNoteActivityViewModel
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -164,14 +188,18 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            mMainActivityViewModel.openSettings(this);
+            startActivity(new Intent(this, GeneralSettingsActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Opens the note which was clicked on in the NotesRecyclerView
+     * @param position int represent which note was clicked in the NotesRecyclerView
+     */
     @Override
     public void onNoteClick(int position) {
-        mMainActivityViewModel.openExistingNote(this, mMainActivityViewModel.getNoteManager().getValue().getNotes().get(position));
+        openExistingNote(m_NoteManager.getNotes().get(position));
     }
 }

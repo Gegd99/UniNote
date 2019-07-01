@@ -56,11 +56,9 @@ public class EditNoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
 
-        //Get all View-Elements by their Id
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        
         findViews();
+
+        attachListeners();
     
         noteManager = NoteManager.getInstance();
     
@@ -101,38 +99,54 @@ public class EditNoteActivity extends AppCompatActivity {
             setTitle("Note");
         }
     }
-    
-    private void findViews() {
+
+    /**
+     * Method in every activity, which finds all View-Elements by their Id
+     */
+    private void findViews(){
+        //Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        //Layouts
         noteViewLayout = findViewById(R.id.noteViewLayout);
-        noteTextView = findViewById(R.id.noteTextView);
         noteEditLayout = findViewById(R.id.noteEditLayout);
+        //TextViews
+        noteTextView = findViewById(R.id.noteTextView);
+        noteTitleTextView = findViewById(R.id.noteTitleTextView);
+
+        noteTextView.setTextIsSelectable(true);
+        //EditTexts
         noteEditText = findViewById(R.id.noteEditText);
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
-        noteTitleTextView = findViewById(R.id.noteTitleTextView);
+        //Button
         noteSettingsButton = findViewById(R.id.noteSettingsButton);
-        
-        noteTextView.setTextIsSelectable(true);
-        
-        // handle double tap
+    }
+
+    /**
+     * Method in every activity which sets all ViewListeners.
+     */
+    private void attachListeners()
+    {
+        // TextViewListener which handles double tap
         noteTextView.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(EditNoteActivity.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
-                    
+
                     Log.d(TAG, "onDoubleTap: switch to edit mode");
-                    
+
                     // go to edit mode
                     editMode();
-                    
+
                     //TODO: maybe use this later to position the cursor in edit text
                     Log.d(TAG, "Raw event: " + event.getAction() + ", (" + event.getRawX() + ", " + event.getRawY() + ")");
-                    
+
                     return super.onDoubleTap(event);
                 }
             });
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                
+
                 if (noteViewLayout.getVisibility() == View.VISIBLE) {  // just making sure... (probably not necessary)
                     gestureDetector.onTouchEvent(event);
                     return true;
@@ -140,11 +154,11 @@ public class EditNoteActivity extends AppCompatActivity {
                 return false;
             }
         });
-        
+
+        //ButtonListener for switching to NoteSettings
         noteSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-    
                 Intent intent = new Intent(getApplicationContext(), CurrentNoteSettings.class);
                 //todo: intent.putExtra("colorHue", note.getNoteMeta().getColor().hue);
                 startActivityForResult(intent, 1);
