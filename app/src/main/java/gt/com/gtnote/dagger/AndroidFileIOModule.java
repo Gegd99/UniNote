@@ -13,11 +13,9 @@ import gt.com.gtnote.Models.AndroidFileIO;
 @Module
 public class AndroidFileIOModule
 {
-    @Inject Context m_Context;
-
     @Provides
-    FileIO provideFileIO()
+    FileIO provideFileIO(Context context)
     {
-        return new AndroidFileIO(m_Context);
+        return new AndroidFileIO(context);
     }
 }

@@ -6,7 +6,7 @@ import dagger.Component;
 import gt.com.gtnote.MainActivity;
 import gt.com.gtnote.Models.NoteManager;
 
-@Component(modules = {ContextModule.class, AndroidFileIOModule.class})
+@Component(modules = {AndroidFileIOModule.class, ContextModule.class})
 public interface NoteManagerComponent
 {
     void inject(MainActivity mainActivity);

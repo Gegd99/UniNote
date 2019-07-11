@@ -151,9 +151,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     public void initNotes()
     {
-        NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.builder()
-                .contextModule(new ContextModule(this))
-                .build();
+        //NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.create();
+        NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.builder().contextModule(new ContextModule(this)).build();
 
         noteManagerComponent.inject(this);
     }
