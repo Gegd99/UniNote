@@ -1,5 +1,7 @@
 package gt.com.gtnote.Models;
 
+import gt.com.gtnote.Interfaces.FileIO;
+
 class FilePointer {
     
     private String path;

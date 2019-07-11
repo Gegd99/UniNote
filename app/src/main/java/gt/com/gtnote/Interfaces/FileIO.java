@@ -1,4 +1,4 @@
-package gt.com.gtnote.Models;
+package gt.com.gtnote.Interfaces;
 
 /**
  * interface that provides read / write utility for files

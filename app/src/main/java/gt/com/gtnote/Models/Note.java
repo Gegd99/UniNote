@@ -1,5 +1,7 @@
 package gt.com.gtnote.Models;
 
+import gt.com.gtnote.Interfaces.NoteContent;
+
 public class Note
 {
     private NoteContent noteContent;

@@ -10,11 +10,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import gt.com.gtnote.Adapters.AndroidFileIO;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import gt.com.gtnote.Interfaces.FileIO;
+import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.SubModels.Color;
 
 public class NoteManager {
@@ -32,10 +35,16 @@ public class NoteManager {
     private FileIO fileIO;
     private NoteMetaParser metaParser = new NoteMetaParser();
     private LinkedList<Note> notes = new LinkedList<>();
-    
-    public NoteManager(FileIO fileIO) throws JSONException {
+
+    @Inject
+    public NoteManager(FileIO fileIO) {
         this.fileIO = fileIO;
-        loadAll();
+        try {
+            loadAll();
+        } catch (JSONException e) {
+            Log.e(TAG, String.format("An error occured while loading the notes."));
+            e.printStackTrace();
+        }
         NoteManager.instance = this;  //TODO: remove this ugly line of code
     }
     

@@ -1,4 +1,4 @@
-package gt.com.gtnote.Adapters;
+package gt.com.gtnote.Models;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -10,7 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import gt.com.gtnote.Models.FileIO;
+import javax.inject.Inject;
+
+import gt.com.gtnote.Interfaces.FileIO;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -18,6 +20,7 @@ public class AndroidFileIO implements FileIO
 {
     private ContextWrapper mContextWrapper;
 
+    @Inject
     public AndroidFileIO(Context context)
     {
         mContextWrapper = new ContextWrapper(context);
