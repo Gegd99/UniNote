@@ -68,34 +68,23 @@ public class EditNoteActivity extends AppCompatActivity {
             int type = extras.getInt(MAIN_EDIT_INTENT_TYPE_ID_KEY);
             int noteId = extras.getInt(MAIN_EDIT_INTENT_NOTE_ID_KEY);
             
-            // create / load note object
-            if (noteId == NOTE_NOT_EXISTENT_ID) {
-                note = m_NoteManager.createNote();
-                Log.d(TAG, "created new note with id="+note.getNoteMeta().getNoteId());
-            } else {
-                note = m_NoteManager.getById(noteId);
-            }
+            //load note object
+            note = m_NoteManager.getById(noteId);
     
             // set proper activity layout
-            switch (type) {
-                case EDIT_NOTE_TYPE_ID:
-                    Log.d(TAG, "opened EditNoteActivity with type=edit, id="+noteId);
-                    
-                    setTitle("Edit Note");
-                    editMode();
-                    
-                    break;
-                case PREVIEW_NOTE_TYPE_ID:
-                    Log.d(TAG, "opened EditNoteActivity with type=preview, id="+noteId);
-                    
-                    previewMode();
-                    
-                    break;
-                default:
-                    Log.w(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
-                    setTitle("Note");
+            if (type == EDIT_NOTE_TYPE_ID || type == PREVIEW_NOTE_TYPE_ID)
+            {
+                Log.d(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
+
+                setMode(type);
             }
-        } else {
+            else
+            {
+                Log.w(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
+                setTitle("Note");
+            }
+        }
+        else {
             Log.w(TAG, "opened EditNoteActivity without any extras");
             setTitle("Note");
         }
@@ -137,7 +126,7 @@ public class EditNoteActivity extends AppCompatActivity {
                     Log.d(TAG, "onDoubleTap: switch to edit mode");
 
                     // go to edit mode
-                    editMode();
+                    setMode(EDIT_NOTE_TYPE_ID);
 
                     //TODO: maybe use this later to position the cursor in edit text
                     Log.d(TAG, "Raw event: " + event.getAction() + ", (" + event.getRawX() + ", " + event.getRawY() + ")");
@@ -191,6 +180,18 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Handles what should be visible.
+     * @param typeID either EDIT_NOTE_TYPE_ID or PREVIEW_NOTE_TYPE_ID
+     */
+    private void setMode(int typeID)
+    {
+        noteTitleTextView.setText(note.getNoteMeta().getTitle());
+        noteTextView.setText(note.getNoteContent().getSpanned());
+
+        setLayoutType(typeID);
+    }
     
     /**
      * Shows one layout and hides the respective other.
@@ -209,28 +210,11 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     }
     
-    private void previewMode() {
-        
-        noteTitleTextView.setText(note.getNoteMeta().getTitle());
-        noteTextView.setText(note.getNoteContent().getSpanned());
-        
-        setLayoutType(PREVIEW_NOTE_TYPE_ID);
-    }
-    
-    private void editMode() {
-        
-        noteTitleEditText.setText(note.getNoteMeta().getTitle());
-        noteEditText.setText(note.getNoteContent().getSpanned());
-        
-        setLayoutType(EDIT_NOTE_TYPE_ID);
-    }
-    
     @Override
     public void onBackPressed() {
         if (noteEditLayout.getVisibility() == View.VISIBLE) {
             finishEditing();
         } else {
-            //TODO: MainActivity needs to update recyclerview when put into focus again ("resumed"?)
             super.onBackPressed();
         }
     }
@@ -253,8 +237,8 @@ public class EditNoteActivity extends AppCompatActivity {
             Log.e(TAG, "finished editing: saving note failed: ", e);
             Toast.makeText(this, "failed to save note", Toast.LENGTH_SHORT).show();
         }
-        
-        previewMode();
+
+        setMode(PREVIEW_NOTE_TYPE_ID);
     }
 
     @Override

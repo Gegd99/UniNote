@@ -34,6 +34,7 @@ import gt.com.gtnote.dagger.ContextModule;
 import gt.com.gtnote.dagger.DaggerNoteManagerComponent;
 import gt.com.gtnote.dagger.NoteManagerComponent;
 
+import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
 import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
 import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
 
@@ -161,7 +162,11 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         Note createdNote = m_NoteManager.createNote();
         Log.d(TAG, "created new note with id="+createdNote.getNoteMeta().getNoteId());
 
-        openExistingNote(createdNote);
+        Intent intent = new Intent(this, EditNoteActivity.class);
+        intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, EDIT_NOTE_TYPE_ID);
+        //intent.putExtra("note", note);
+        intent.putExtra("noteId", createdNote.getNoteMeta().getNoteId());
+        startActivity(intent);
     }
 
     private void openExistingNote(Note note)
@@ -169,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         Intent intent = new Intent(this, EditNoteActivity.class);
         intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, PREVIEW_NOTE_TYPE_ID);
         //intent.putExtra("note", note);
-        intent.putExtra("noteId", note.getNoteMeta().getNoteId());  //TODO: should be passed to the EditNoteActivityViewModel
+        intent.putExtra("noteId", note.getNoteMeta().getNoteId());
         startActivity(intent);
     }
 
