@@ -1,6 +1,5 @@
 package gt.com.gtnote;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,20 +18,23 @@ import org.json.JSONException;
 
 import java.util.List;
 
-import gt.com.gtnote.Adapters.AndroidFileIO;
+import javax.inject.Inject;
+
+import gt.com.gtnote.Models.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
 import gt.com.gtnote.Interfaces.OnNoteListener;
 import gt.com.gtnote.Models.Note;
-import gt.com.gtnote.Models.NoteContent;
+import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
 
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SubModels.Color;
+import gt.com.gtnote.dagger.AndroidFileIOModule;
+import gt.com.gtnote.dagger.ContextModule;
+import gt.com.gtnote.dagger.DaggerNoteManagerComponent;
+import gt.com.gtnote.dagger.NoteManagerComponent;
 
-import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
-import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
 import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
-import static gt.com.gtnote.statics.Constants.NOTE_NOT_EXISTENT_ID;
 import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
 
 public class MainActivity extends AppCompatActivity implements OnNoteListener {
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
-    private NoteManager m_NoteManager;
+    @Inject NoteManager m_NoteManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
-    public void initNotes() {
-        try {
-            m_NoteManager = new NoteManager(new AndroidFileIO(this));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public void initNotes()
+    {
+        //NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.create();
+        NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.builder().contextModule(new ContextModule(this)).build();
+
+        noteManagerComponent.inject(this);
     }
 
     private void createNewNote()

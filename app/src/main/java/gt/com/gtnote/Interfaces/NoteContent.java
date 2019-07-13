@@ -1,4 +1,4 @@
-package gt.com.gtnote.Models;
+package gt.com.gtnote.Interfaces;
 
 import android.text.Spanned;
 

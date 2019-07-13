@@ -4,6 +4,7 @@ import android.text.Spanned;
 
 import java.util.List;
 
+import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.SubModels.Resource;
 
 /**
