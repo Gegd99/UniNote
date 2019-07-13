@@ -8,6 +8,7 @@
     tools:context="gt.com.gtnote.EditNoteActivity">
 
     <ScrollView
+        android:id="@+id/editNoteActivityBaseView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private Note note;
 
     private Toolbar mToolbar;
+    private View baseView;
     private LinearLayout noteViewLayout;
     private TextView noteTextView;
     private LinearLayout noteEditLayout;
@@ -108,6 +110,10 @@ public class EditNoteActivity extends AppCompatActivity {
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        
+        // Base View (whole activity)
+        baseView = findViewById(R.id.editNoteActivityBaseView);
+        
         //Layouts
         noteViewLayout = findViewById(R.id.noteViewLayout);
         noteEditLayout = findViewById(R.id.noteEditLayout);
@@ -129,7 +135,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private void attachListeners()
     {
         // TextViewListener which handles double tap
-        noteTextView.setOnTouchListener(new View.OnTouchListener() {
+        View.OnTouchListener doubleTabEditListener = new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(EditNoteActivity.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
@@ -154,7 +160,10 @@ public class EditNoteActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
+        };
+    
+        baseView.setOnTouchListener(doubleTabEditListener);
+        noteTextView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that TextView
 
         //ButtonListener for switching to NoteSettings
         noteSettingsButton.setOnClickListener(new View.OnClickListener() {
