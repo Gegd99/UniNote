@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         findViews();
 
-        initNotes();
+        initNoteManager();
 
         //TODO: Update mAdapter if anything in NoteManager changes
 
@@ -149,10 +149,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
-    public void initNotes()
+    public void initNoteManager()
     {
-        //NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.create();
-        NoteManagerComponent noteManagerComponent = DaggerNoteManagerComponent.builder().contextModule(new ContextModule(this)).build();
+        NoteManagerComponent noteManagerComponent = ((ApplicationClass) getApplication()).getNoteManagerComponent();
 
         noteManagerComponent.inject(this);
     }
@@ -172,6 +171,13 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         //intent.putExtra("note", note);
         intent.putExtra("noteId", note.getNoteMeta().getNoteId());  //TODO: should be passed to the EditNoteActivityViewModel
         startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        mAdapter.notifyDataSetChanged();
+        super.onResume();
+
     }
 
     @Override
