@@ -29,9 +29,6 @@ import gt.com.gtnote.Models.NoteManager;
 
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SubModels.Color;
-import gt.com.gtnote.dagger.AndroidFileIOModule;
-import gt.com.gtnote.dagger.ContextModule;
-import gt.com.gtnote.dagger.DaggerNoteManagerComponent;
 import gt.com.gtnote.dagger.NoteManagerComponent;
 
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
@@ -110,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         // set data
         meta.setColor(Color.BLUE);
         meta.setTitle(titleString);
-        content.setSpanned(new SpannableString(contentString));
+        content.setText(new SpannableString(contentString));
 
         // write to file
         noteManager.save(note);
@@ -124,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         // get note instance and read content from file
         note = noteManager.getById(id);
         if (note != null) {
-            Spanned spanned = note.getNoteContent().getSpanned();  // reads from file
+            Spanned spanned = note.getNoteContent().getText();  // reads from file
             String loadedContentString = spanned.toString();
             Log.d(TAG, String.format("test: loaded content string: '''%s'''", loadedContentString));
 

@@ -51,8 +51,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text|textMultiLine"
-                    android:background="@color/colorPrimaryDark"
-                    android:textSize="24sp"
+                    android:fontFamily="monospace"
+                    android:textSize="24dp"
+                    android:padding="12dp"
                     />
 
                 <TextView
@@ -68,7 +69,7 @@
                 android:visibility="gone"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -84,12 +85,10 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/noteTextView"
+                <WebView
+                    android:id="@+id/noteWebView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimaryDark"
-                    android:textSize="24sp"
                     />
 
                 <TextView
@@ -97,6 +96,7 @@
                     android:layout_height="wrap_content"
                     android:text="double tap on text to edit"
                     android:textAlignment="center"/>
+
             </LinearLayout>
 
         </LinearLayout>

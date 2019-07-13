@@ -225,7 +225,7 @@ public class NoteManager {
      */
     private void saveContent(Note note) {
         
-        Spanned spanned = note.getNoteContent().getSpanned();
+        Spanned spanned = note.getNoteContent().getText();
         String source = null;
         if (Build.VERSION.SDK_INT >= 24) {
             source = Html.toHtml(spanned, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
