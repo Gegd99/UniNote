@@ -21,9 +21,12 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
+import javax.inject.Inject;
+
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
+import gt.com.gtnote.dagger.NoteManagerComponent;
 
 import static gt.com.gtnote.statics.Constants.COLOR_PICK_INTENT_KEY;
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
@@ -38,8 +41,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private final int NOTE_NOT_EXISTENT_ID = -1;
     
     //private int noteId = NOTE_NOT_EXISTENT_ID;  // would be 0 if not initialized like this (which could overwrite note with ID=0 if something goes wrong)
-    
-    private NoteManager noteManager;
+
+    @Inject NoteManager m_NoteManager;
     private Note note;
 
     private Toolbar mToolbar;
@@ -57,10 +60,8 @@ public class EditNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_note);
 
         findViews();
-
         attachListeners();
-    
-        noteManager = NoteManager.getInstance();
+        initNoteManager();
     
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -69,10 +70,10 @@ public class EditNoteActivity extends AppCompatActivity {
             
             // create / load note object
             if (noteId == NOTE_NOT_EXISTENT_ID) {
-                note = noteManager.createNote();
+                note = m_NoteManager.createNote();
                 Log.d(TAG, "created new note with id="+note.getNoteMeta().getNoteId());
             } else {
-                note = noteManager.getById(noteId);
+                note = m_NoteManager.getById(noteId);
             }
     
             // set proper activity layout
@@ -165,7 +166,14 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
     }
-    
+
+    public void initNoteManager()
+    {
+        NoteManagerComponent noteManagerComponent = ((ApplicationClass) getApplication()).getNoteManagerComponent();
+
+        noteManagerComponent.inject(this);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -238,8 +246,8 @@ public class EditNoteActivity extends AppCompatActivity {
             meta.setLastEditTime(System.currentTimeMillis());
             
             note.getNoteContent().setSpanned(new SpannableString(noteEditText.getText()));
-            
-            noteManager.save(note);
+
+            m_NoteManager.save(note);
             
         } catch (JSONException e) {
             Log.e(TAG, "finished editing: saving note failed: ", e);

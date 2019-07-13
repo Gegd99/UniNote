@@ -20,6 +20,7 @@ import gt.com.gtnote.Interfaces.FileIO;
 import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.SubModels.Color;
 
+@Singleton
 public class NoteManager {
     
     //TODO: this ugly singleton is just a temporary solution. EditNoteActivity should access a ViewModel
