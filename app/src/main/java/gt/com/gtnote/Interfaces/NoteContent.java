@@ -7,8 +7,8 @@ import java.util.List;
 import gt.com.gtnote.Models.SubModels.Resource;
 
 public interface NoteContent {
-    public Spanned getSpanned();
-    public void setSpanned(Spanned spanned);
+    Spanned getText();
+    void setText(Spanned spanned);
     void setResources(List<Resource> resources);
     List<Resource> getResources();
 }

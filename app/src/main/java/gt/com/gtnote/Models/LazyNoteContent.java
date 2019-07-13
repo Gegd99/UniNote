@@ -30,7 +30,7 @@ class LazyNoteContent implements NoteContent {
      * @return the loaded content
      */
     @Override
-    public Spanned getSpanned() {
+    public Spanned getText() {
         if (!textLoaded) {
             loadText();
             textLoaded = true;
@@ -43,7 +43,7 @@ class LazyNoteContent implements NoteContent {
      * @param spanned
      */
     @Override
-    public void setSpanned(Spanned spanned) {
+    public void setText(Spanned spanned) {
         this.spanned = spanned;
         textLoaded = true;
     }

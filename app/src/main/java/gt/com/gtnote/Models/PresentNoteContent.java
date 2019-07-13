@@ -21,12 +21,12 @@ class PresentNoteContent implements NoteContent {
     }
     
     @Override
-    public Spanned getSpanned() {
+    public Spanned getText() {
         return spanned;
     }
     
     @Override
-    public void setSpanned(Spanned spanned) {
+    public void setText(Spanned spanned) {
         this.spanned = spanned;
     }
     

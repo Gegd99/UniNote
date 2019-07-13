@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -13,14 +14,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.markdown4j.Markdown4jProcessor;
 
 import org.json.JSONException;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -55,6 +58,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
     private Button noteSettingsButton;
+    
+    private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,9 +202,18 @@ public class EditNoteActivity extends AppCompatActivity {
     private void setMode(int typeID)
     {
         noteTitleTextView.setText(note.getNoteMeta().getTitle());
-        noteTextView.setText(note.getNoteContent().getSpanned());
+        noteTextView.setText(Html.fromHtml(getHTMLFromMarkdown(note.getNoteContent().getText().toString())));
 
         setLayoutType(typeID);
+    }
+    
+    private String getHTMLFromMarkdown(String markdownSource) {
+        try {
+            return markdown4jProcessor.process(markdownSource);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     /**
@@ -238,7 +252,7 @@ public class EditNoteActivity extends AppCompatActivity {
             //meta.setColor();  //TODO
             meta.setLastEditTime(System.currentTimeMillis());
             
-            note.getNoteContent().setSpanned(new SpannableString(noteEditText.getText()));
+            note.getNoteContent().setText(new SpannableString(noteEditText.getText()));
 
             m_NoteManager.save(note);
             
