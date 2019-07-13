@@ -8,12 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -52,7 +54,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private View baseView;
     private LinearLayout noteViewLayout;
-    private TextView noteTextView;
+    private WebView noteWebView;
     private LinearLayout noteEditLayout;
     private EditText noteEditText;
     private EditText noteTitleEditText;
@@ -60,11 +62,14 @@ public class EditNoteActivity extends AppCompatActivity {
     private Button noteSettingsButton;
     
     private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
+    private String cssStyleSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
+    
+        cssStyleSource = getString(R.string.note_webview_css);
 
         findViews();
         attachListeners();
@@ -111,11 +116,13 @@ public class EditNoteActivity extends AppCompatActivity {
         //Layouts
         noteViewLayout = findViewById(R.id.noteViewLayout);
         noteEditLayout = findViewById(R.id.noteEditLayout);
+        
         //TextViews
-        noteTextView = findViewById(R.id.noteTextView);
         noteTitleTextView = findViewById(R.id.noteTitleTextView);
-
-        noteTextView.setTextIsSelectable(true);
+        
+        // WebView
+        noteWebView = findViewById(R.id.noteWebView);
+        
         //EditTexts
         noteEditText = findViewById(R.id.noteEditText);
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
@@ -150,14 +157,13 @@ public class EditNoteActivity extends AppCompatActivity {
 
                 if (noteViewLayout.getVisibility() == View.VISIBLE) {  // just making sure... (probably not necessary)
                     gestureDetector.onTouchEvent(event);
-                    return true;
                 }
                 return false;
             }
         };
     
         baseView.setOnTouchListener(doubleTabEditListener);
-        noteTextView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that TextView
+        noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that TextView
 
         //ButtonListener for switching to NoteSettings
         noteSettingsButton.setOnClickListener(new View.OnClickListener() {
@@ -202,14 +208,21 @@ public class EditNoteActivity extends AppCompatActivity {
     private void setMode(int typeID)
     {
         noteTitleTextView.setText(note.getNoteMeta().getTitle());
-        noteTextView.setText(Html.fromHtml(getHTMLFromMarkdown(note.getNoteContent().getText().toString())));
+        String htmlString = getHTMLFromMarkdown(
+                note.getNoteContent().getText().toString(),
+                cssStyleSource);
+        noteWebView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null);
 
         setLayoutType(typeID);
     }
     
-    private String getHTMLFromMarkdown(String markdownSource) {
+    private String getHTMLFromMarkdown(String markdownSource, String cssSource) {
         try {
-            return markdown4jProcessor.process(markdownSource);
+            String htmlString = markdown4jProcessor.process(markdownSource);
+            htmlString = String.format(
+                    "<html><head><style>%s</style></head><body>%s</body></html>",
+                    cssSource, htmlString);
+            return htmlString;
         } catch (IOException e) {
             e.printStackTrace();
         }
