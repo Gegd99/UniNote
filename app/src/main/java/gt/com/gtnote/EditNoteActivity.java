@@ -68,13 +68,8 @@ public class EditNoteActivity extends AppCompatActivity {
             int type = extras.getInt(MAIN_EDIT_INTENT_TYPE_ID_KEY);
             int noteId = extras.getInt(MAIN_EDIT_INTENT_NOTE_ID_KEY);
             
-            // create / load note object
-            if (noteId == NOTE_NOT_EXISTENT_ID) {
-                note = m_NoteManager.createNote();
-                Log.d(TAG, "created new note with id="+note.getNoteMeta().getNoteId());
-            } else {
-                note = m_NoteManager.getById(noteId);
-            }
+            //load note object
+            note = m_NoteManager.getById(noteId);
     
             // set proper activity layout
             switch (type) {
@@ -95,7 +90,8 @@ public class EditNoteActivity extends AppCompatActivity {
                     Log.w(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
                     setTitle("Note");
             }
-        } else {
+        }
+        else {
             Log.w(TAG, "opened EditNoteActivity without any extras");
             setTitle("Note");
         }
