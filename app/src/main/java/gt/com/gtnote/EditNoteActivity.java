@@ -179,23 +179,25 @@ public class EditNoteActivity extends AppCompatActivity {
         });
         
         // open links in external browser
-        noteWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                handleUrl(url);
-                return true;
-            }
-    
-            // WebResourceRequest.getUrl() is only available in API >= 21,
-            // but this method got introduces in API 24, so the warning is unnecessary
-            @SuppressLint("NewApi")
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                handleUrl(url);
-                return true;
-            }
-        });
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            noteWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    String url = request.getUrl().toString();
+                    handleUrl(url);
+                    return true;
+                }
+            });
+        } else {
+            // use deprecated method
+            noteWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    handleUrl(url);
+                    return true;
+                }
+            });
+        }
     }
     
     private void handleUrl(String url) {
