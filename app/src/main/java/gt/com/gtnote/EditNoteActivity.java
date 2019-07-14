@@ -1,29 +1,31 @@
 package gt.com.gtnote;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.markdown4j.Markdown4jProcessor;
 
 import org.json.JSONException;
+import org.markdown4j.Markdown4jProcessor;
 
 import java.io.IOException;
 
@@ -63,6 +65,7 @@ public class EditNoteActivity extends AppCompatActivity {
     
     private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
     private String cssStyleSource;
+    private String baseUrl = "gtnote://gtnote.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +177,67 @@ public class EditNoteActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+        
+        // open links in external browser
+        noteWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                handleUrl(url);
+                return true;
+            }
+    
+            // WebResourceRequest.getUrl() is only available in API >= 21,
+            // but this method got introduces in API 24, so the warning is unnecessary
+            @SuppressLint("NewApi")
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                handleUrl(url);
+                return true;
+            }
+        });
+    }
+    
+    private void handleUrl(String url) {
+        
+        url = stripBaseUrlIfPresent(url);
+        
+        Note linkedNote = getNoteByTitle(url);
+        if (linkedNote == null) {
+            
+            url = addProtocolIfMissing(url);
+            
+            Log.d(TAG, "handleUrl: open link: "+url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        } else {
+            // open linkedNote
+            Log.d(TAG, "handleUrl: open linked note: "+linkedNote.getNoteMeta().getTitle());
+        }
+    }
+    
+    private String stripBaseUrlIfPresent(String url) {
+        if (url.startsWith(baseUrl)) {
+            return url.substring(baseUrl.length());
+        }
+        return url;
+    }
+    
+    private Note getNoteByTitle(String title) {
+        for (Note note: m_NoteManager.getAll()) {
+            if (note.getNoteMeta().getTitle().equals(title)) {
+                return note;
+            }
+        }
+        return null;
+    }
+    
+    private String addProtocolIfMissing(String url) {
+        boolean hasProtocol = url.startsWith("http://") || url.startsWith("https://");
+        if (!hasProtocol) {
+            return "https://" + url;
+        }
+        return url;
     }
 
     public void initNoteManager()
@@ -211,7 +275,9 @@ public class EditNoteActivity extends AppCompatActivity {
         String htmlString = getHTMLFromMarkdown(
                 note.getNoteContent().getText().toString(),
                 cssStyleSource);
-        noteWebView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null);
+        // baseUrl is necessary in order to catch links in simpler format
+        // otherwise, only links like https://www.google.com would be caught, but not www.google.de
+        noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
 
         setLayoutType(typeID);
     }
