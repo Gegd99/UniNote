@@ -231,7 +231,8 @@ public class EditNoteActivity extends AppCompatActivity {
                             "handleUrl: open linked note #%d with title '%s'",
                             noteId, linkedNote.getNoteMeta().getTitle()
                     ));
-                    //todo: open linked note
+                    
+                    openLinkedNote(linkedNote);
         
                 } else {
                     //todo: get align from clicked link as default title
@@ -332,6 +333,19 @@ public class EditNoteActivity extends AppCompatActivity {
             return "https://" + url;
         }
         return url;
+    }
+    
+    /**
+     * Creates another instance of this activity on top
+     * of this activity and shows the linked note.
+     *
+     * @param note the linked note to display
+     */
+    private void openLinkedNote(Note note) {
+        Intent intent = new Intent(this, EditNoteActivity.class);
+        intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, PREVIEW_NOTE_TYPE_ID);  // open in preview mode
+        intent.putExtra("noteId", note.getNoteMeta().getNoteId());  // tell which note to show
+        startActivity(intent);
     }
 
     public void initNoteManager()
