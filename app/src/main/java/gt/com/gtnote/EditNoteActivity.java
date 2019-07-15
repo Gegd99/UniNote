@@ -224,23 +224,28 @@ public class EditNoteActivity extends AppCompatActivity {
             
             int noteId = parseNoteId(url);
             if (noteId != -1) {
-                Note linkedNote = getNoteById(noteId);
-                if (linkedNote != null) {
+                
+                if (noteId != note.getNoteMeta().getNoteId()) {
+                    Note linkedNote = getNoteById(noteId);
+                    if (linkedNote != null) {
         
-                    Log.d(TAG, String.format(
-                            "handleUrl: open linked note #%d with title '%s'",
-                            noteId, linkedNote.getNoteMeta().getTitle()
-                    ));
-                    
-                    openLinkedNote(linkedNote);
+                        Log.d(TAG, String.format(
+                                "handleUrl: open linked note #%d with title '%s'",
+                                noteId, linkedNote.getNoteMeta().getTitle()
+                        ));
         
-                } else {
-                    //todo: get align from clicked link as default title
-                    Log.d(TAG, String.format(
-                            "handleUrl: create non-existent linked note #%d",
-                            noteId
-                    ));
-                    //todo: prompt to create note
+                        openLinkedNote(linkedNote);
+        
+                    } else {
+                        //todo: get align from clicked link as default title
+                        Log.d(TAG, String.format(
+                                "handleUrl: create non-existent linked note #%d",
+                                noteId
+                        ));
+                        //todo: prompt to create note
+                    }
+                } else {  // this note is already shown here
+                    Toast.makeText(this, "This note is already here.", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 // ignore
