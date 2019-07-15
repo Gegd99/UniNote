@@ -1,29 +1,31 @@
 package gt.com.gtnote;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.markdown4j.Markdown4jProcessor;
 
 import org.json.JSONException;
+import org.markdown4j.Markdown4jProcessor;
 
 import java.io.IOException;
 
@@ -62,7 +64,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private Button noteSettingsButton;
     
     private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
-    private String cssStyleSource;
+    private String cssStyleSource;  // this style will be applied to the WebView showing the parsed NoteContent
+    private String baseUrl = "gtnote://gtnote.com/";  // random prefix for all links to fix detection of link clicks
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +166,7 @@ public class EditNoteActivity extends AppCompatActivity {
         };
     
         baseView.setOnTouchListener(doubleTabEditListener);
-        noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that TextView
+        noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
 
         //ButtonListener for switching to NoteSettings
         noteSettingsButton.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +177,105 @@ public class EditNoteActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+        
+        // Force WebView to open links in external browser
+        // instead of displaying them inside the WebView.
+        // Use different methods for different api levels.
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            // use today's method
+            noteWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    String url = request.getUrl().toString();
+                    handleUrl(url);
+                    return true;
+                }
+            });
+        } else {
+            // use deprecated method
+            noteWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    handleUrl(url);
+                    return true;
+                }
+            });
+        }
+    }
+    
+    /**
+     * Decides what to do when the user clicked a link with that url<br>
+     * Four possible outcomes:
+     * <ol>
+     *     <li>The link is a Note ID and the Note exists → show that Note</li>
+     *     <li>The link is a Note ID and the Note doesn't exist → prompt to create that Note</li>
+     *     <li>The link is a Website → open in external browser</li>
+     *     <li>The link is none of the above</li>
+     * </ol>
+     *
+     * Note that 1. and 2. are note implemented yet.
+     * @param url the URL or Note ID behind the link the user clicked
+     */
+    private void handleUrl(String url) {
+        
+        url = stripBaseUrlIfPresent(url);  // baseUrl is not part of the actual link
+        
+        // test whether the user linked a Note or a website
+        Note linkedNote = getNoteByTitle(url);
+        if (linkedNote == null) {  // assume the user linked a website
+            
+            url = addProtocolIfMissing(url);  // android decides based on the protocol which application will handle this
+            
+            Log.d(TAG, "handleUrl: open link: "+url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        } else {  // assume user linked a note
+            //todo: open linked note
+            Log.d(TAG, "handleUrl: open linked note: "+linkedNote.getNoteMeta().getTitle());
+        }
+    }
+    
+    /**
+     * baseUrl only exists to catch clicks on links with URLs
+     * without absolute links (== without protocol).
+     * This is of course not part of the actual link,
+     * which is why it has to be removed before any further processing.
+     *
+     * @param url the URL as it was passed to the WebClient
+     * @return
+     */
+    private String stripBaseUrlIfPresent(String url) {
+        if (url.startsWith(baseUrl)) {
+            return url.substring(baseUrl.length());
+        }
+        return url;
+    }
+    
+    // todo: change this to getNoteById()
+    private Note getNoteByTitle(String title) {
+        for (Note note: m_NoteManager.getAll()) {
+            if (note.getNoteMeta().getTitle().equals(title)) {
+                return note;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * When a new Intent is called as ACTION_VIEW,
+     * android decides based on the protocol of the passed URI
+     * which application will handle this. In order to open
+     * all links in a browser, a web protocol needs to be in the URL.
+     *
+     * @param url the URL as it was written by the user inside the markdown link
+     * @return the URL with a protocol in front
+     */
+    private String addProtocolIfMissing(String url) {
+        boolean hasProtocol = url.startsWith("http://") || url.startsWith("https://");
+        if (!hasProtocol) {
+            return "https://" + url;
+        }
+        return url;
     }
 
     public void initNoteManager()
@@ -211,7 +313,10 @@ public class EditNoteActivity extends AppCompatActivity {
         String htmlString = getHTMLFromMarkdown(
                 note.getNoteContent().getText().toString(),
                 cssStyleSource);
-        noteWebView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null);
+        
+        // baseUrl is necessary in order to catch links in simpler format
+        // otherwise, only links like https://www.google.com would be caught, but not www.google.de
+        noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
 
         setLayoutType(typeID);
     }
@@ -220,7 +325,7 @@ public class EditNoteActivity extends AppCompatActivity {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
             htmlString = String.format(
-                    "<html><head><style>%s</style></head><body>%s</body></html>",
+                    "<html><head><style>%s</style></head><body>%s</body></html>",  // build a website with styling
                     cssSource, htmlString);
             return htmlString;
         } catch (IOException e) {
