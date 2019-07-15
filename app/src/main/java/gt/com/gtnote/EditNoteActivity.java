@@ -1,6 +1,5 @@
 package gt.com.gtnote;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -221,17 +220,46 @@ public class EditNoteActivity extends AppCompatActivity {
         url = stripBaseUrlIfPresent(url);  // baseUrl is not part of the actual link
         
         // test whether the user linked a Note or a website
-        Note linkedNote = getNoteByTitle(url);
-        if (linkedNote == null) {  // assume the user linked a website
+        if (looksLikeNoteId(url)) {  // assume user linked a note
+            
+            int noteId = parseNoteId(url);
+            if (noteId != -1) {
+                
+                if (noteId != note.getNoteMeta().getNoteId()) {
+                    Note linkedNote = getNoteById(noteId);
+                    if (linkedNote != null) {
+        
+                        Log.d(TAG, String.format(
+                                "handleUrl: open linked note #%d with title '%s'",
+                                noteId, linkedNote.getNoteMeta().getTitle()
+                        ));
+        
+                        openLinkedNote(linkedNote);
+        
+                    } else {
+                        //todo: get align from clicked link as default title
+                        Log.d(TAG, String.format(
+                                "handleUrl: create non-existent linked note #%d",
+                                noteId
+                        ));
+                        //todo: prompt to create note
+                    }
+                } else {  // this note is already shown here
+                    Toast.makeText(this, "This note is already here.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // ignore
+                Log.d(TAG, "handleUrl: note ID could not be parsed: '"+url+"'");
+            }
+            
+        } else {  // assume the user linked a website
             
             url = addProtocolIfMissing(url);  // android decides based on the protocol which application will handle this
-            
+    
             Log.d(TAG, "handleUrl: open link: "+url);
+            
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
-        } else {  // assume user linked a note
-            //todo: open linked note
-            Log.d(TAG, "handleUrl: open linked note: "+linkedNote.getNoteMeta().getTitle());
         }
     }
     
@@ -251,14 +279,48 @@ public class EditNoteActivity extends AppCompatActivity {
         return url;
     }
     
-    // todo: change this to getNoteById()
-    private Note getNoteByTitle(String title) {
+    /**
+     * iterates over all notes returned by NoteManager.getAll() and
+     * returns first note with given ID or null if not found.
+     * @param id
+     * @return
+     */
+    private Note getNoteById(int id) {
         for (Note note: m_NoteManager.getAll()) {
-            if (note.getNoteMeta().getTitle().equals(title)) {
+            if (note.getNoteMeta().getNoteId() == id) {
                 return note;
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns whether the given URL could be interpreted as a Note ID
+     * @param url
+     * @return
+     */
+    private boolean looksLikeNoteId(String url) {
+        try {
+            Integer.parseInt(url);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * tries to parse the given string to a Note ID,
+     * otherwise returns -1
+     * @param url
+     * @return the parsed Note ID or -1
+     */
+    private int parseNoteId(String url) {
+        try {
+            return Integer.parseInt(url);
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        return -1;
     }
     
     /**
@@ -276,6 +338,19 @@ public class EditNoteActivity extends AppCompatActivity {
             return "https://" + url;
         }
         return url;
+    }
+    
+    /**
+     * Creates another instance of this activity on top
+     * of this activity and shows the linked note.
+     *
+     * @param note the linked note to display
+     */
+    private void openLinkedNote(Note note) {
+        Intent intent = new Intent(this, EditNoteActivity.class);
+        intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, PREVIEW_NOTE_TYPE_ID);  // open in preview mode
+        intent.putExtra("noteId", note.getNoteMeta().getNoteId());  // tell which note to show
+        startActivity(intent);
     }
 
     public void initNoteManager()
