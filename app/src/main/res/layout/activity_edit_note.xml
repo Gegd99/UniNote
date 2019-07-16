@@ -44,7 +44,7 @@
                         />
 
                     <Button
-                        android:id="@+id/noteSettingsButton"
+                        android:id="@+id/noteColorButtonEdit"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         />
@@ -152,6 +152,7 @@
                         />
 
                     <Button
+                        android:id="@+id/noteColorButtonView"
                         android:layout_width="60dp"
                         android:layout_height="60dp" />
 

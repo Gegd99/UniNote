@@ -1,7 +1,6 @@
 package gt.com.gtnote;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,6 +33,7 @@ import gt.com.gtnote.Models.TextEditOperations;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
+import gt.com.gtnote.Models.SubModels.Color;
 import gt.com.gtnote.dagger.NoteManagerComponent;
 
 import static gt.com.gtnote.statics.Constants.COLOR_PICK_INTENT_KEY;
@@ -61,7 +61,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteEditText;
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
-    private Button noteSettingsButton;
+    private Button noteColorButtonEdit;
+    private Button noteColorButtonView;
     private Button markdownButtonBold;
     private Button markdownButtonItalique;
     private Button markdownButtonLink;
@@ -109,6 +110,8 @@ public class EditNoteActivity extends AppCompatActivity {
             Log.w(TAG, "opened EditNoteActivity without any extras");
             setTitle("Note");
         }
+        
+        onNoteColorChanged();
     }
 
     /**
@@ -136,7 +139,8 @@ public class EditNoteActivity extends AppCompatActivity {
         noteEditText = findViewById(R.id.noteEditText);
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
         //Button
-        noteSettingsButton = findViewById(R.id.noteSettingsButton);
+        noteColorButtonEdit = findViewById(R.id.noteColorButtonEdit);
+        noteColorButtonView = findViewById(R.id.noteColorButtonView);
         
         // Markdown Menu
         markdownButtonBold = findViewById(R.id.editNoteMarkdownButtonBold);
@@ -181,10 +185,10 @@ public class EditNoteActivity extends AppCompatActivity {
         noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
 
         //ButtonListener for switching to NoteSettings
-        noteSettingsButton.setOnClickListener(new View.OnClickListener() {
+        noteColorButtonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CurrentNoteSettings.class);
+                Intent intent = new Intent(getApplicationContext(), ColorPickingActivity.class);
                 //todo: intent.putExtra("colorHue", note.getNoteMeta().getColor().hue);
                 startActivityForResult(intent, 1);
             }
@@ -442,20 +446,34 @@ public class EditNoteActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                float colorHue = data.getFloatExtra(COLOR_PICK_INTENT_KEY, 0);
-                float[] hsv = new float[]{
-                        colorHue,
-                        1,
-                        1
-                };
-                int noteColor = Color.HSVToColor(hsv);
-                //todo: note.getNoteMeta().setColor(Color.red(noteColor), Color.green(noteColor), Color.blue(noteColor));
-                Toast.makeText(this, String.format("rgb: (%d, %d, %d)", Color.red(noteColor), Color.green(noteColor), Color.blue(noteColor)), Toast.LENGTH_LONG).show();
-                noteSettingsButton.getBackground().setColorFilter(noteColor, PorterDuff.Mode.MULTIPLY);
-            }
+        if (requestCode == 1 && resultCode == RESULT_OK) {  // user picked a color
+            
+            // get color from intent
+            int colorId = data.getIntExtra(COLOR_PICK_INTENT_KEY, Color.UNKNOWN.id);
+            Color color = Color.fromId(colorId);
+            
+            // set color in note object
+            note.getNoteMeta().setColor(color);
+            
+            // update UI
+            onNoteColorChanged();
         }
+    }
+    
+    /**
+     * This method should be called once in the beginning
+     * and then every time the note color changes.
+     */
+    private void onNoteColorChanged() {
+        
+        // get color from note (or UNKNOWN if no note available)
+        Color color = note != null ? note.getNoteMeta().getColor() : Color.UNKNOWN;
+        
+        int androidColor = android.graphics.Color.rgb(color.red, color.green, color.blue);
+        
+        // change *both* buttons (edit mode and preview mode)
+        noteColorButtonEdit.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        noteColorButtonView.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
     }
 
     /**
@@ -562,7 +580,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
 
         if (id == R.id.action_settings2) {
-            //Open CurrentNoteSettings
+            //Open ColorPickingActivity
         }
 
         return super.onOptionsItemSelected(item);
