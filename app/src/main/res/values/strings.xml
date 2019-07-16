@@ -11,6 +11,7 @@
         }
 
         img {
+            image-rendering: pixelated;
             width: 100%;
             height: auto;
         }
