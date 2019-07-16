@@ -1,6 +1,7 @@
 package gt.com.gtnote;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -35,15 +36,21 @@ public class CurrentNoteSettings extends AppCompatActivity {
     private View makeColorElement(final Color color) {
         
         Button button = new Button(this);
+    
+        // get dimensions
+        int size = (int) getResources().getDimension(R.dimen.color_element_size);
+        int margin = (int) getResources().getDimension(R.dimen.color_element_margin);
+    
+        // apply layout
+        button.setBackgroundResource(R.drawable.color_pick_element);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+        params.setMargins(margin, margin, margin, margin);
+        button.setLayoutParams(params);
         
         // set color
-        button.setBackgroundColor(android.graphics.Color.rgb(color.red, color.green, color.blue));
-        
-        // set size
-        // todo: use layout from an xml file here instead of setting it programmatically
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
-        params.setMargins(8, 8, 8, 8);
-        button.setLayoutParams(params);
+        int androidColor = android.graphics.Color.rgb(color.red, color.green, color.blue);
+        GradientDrawable background = (GradientDrawable) button.getBackground();
+        background.setColor(androidColor);
     
         // attach onclick listener
         button.setOnClickListener(new View.OnClickListener() {

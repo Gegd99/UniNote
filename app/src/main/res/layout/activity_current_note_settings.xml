@@ -13,7 +13,7 @@
         android:columnCount="2"
         android:rowCount="5"
         android:alignmentMode="alignMargins"
-        android:layout_margin="8px"
+        android:layout_margin="@dimen/color_element_margin"
         android:columnOrderPreserved="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
