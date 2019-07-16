@@ -8,24 +8,16 @@
     android:gravity="center"
     tools:context="gt.com.gtnote.CurrentNoteSettings">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="48dp" />
-
-    <android.support.v7.widget.AppCompatSeekBar
-        android:id="@+id/noteColorSeekBar"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/noteSettingsConfirmButton"
-        android:layout_marginTop="30dp"
-        android:text="OK"
+    <GridLayout
+        android:id="@+id/colorGrid"
+        android:columnCount="2"
+        android:rowCount="5"
+        android:alignmentMode="alignMargins"
+        android:layout_margin="8px"
+        android:columnOrderPreserved="false"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="48dp" />
+    </GridLayout>
 
 </LinearLayout>
