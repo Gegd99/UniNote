@@ -51,6 +51,60 @@
 
                 </LinearLayout>
 
+                <!-- menu: markdown utility -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonBold"
+                            android:text="B"
+                            android:textStyle="bold"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonItalique"
+                            android:text="I"
+                            android:textStyle="italic"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonLink"
+                            android:text="Link"
+                            android:textAllCaps="false"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonLinkNote"
+                            android:text="Note"
+                            android:textAllCaps="false"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
                 <EditText
                     android:id="@+id/noteEditText"
                     android:layout_width="match_parent"

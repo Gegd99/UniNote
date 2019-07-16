@@ -1,3 +1,4 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="menu_button_min_width">48dp</dimen>
 </resources>
