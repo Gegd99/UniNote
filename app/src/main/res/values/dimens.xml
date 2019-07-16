@@ -4,4 +4,5 @@
     <dimen name="color_element_margin">5dp</dimen>
     <dimen name="color_element_size">100dp</dimen>
     <dimen name="menu_button_min_width">48dp</dimen>
+    <dimen name="note_header_elevation">5dp</dimen>
 </resources>

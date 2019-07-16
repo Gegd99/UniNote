@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,8 +62,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteEditText;
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
-    private Button noteColorButtonEdit;
-    private Button noteColorButtonView;
+    private ImageButton noteColorButtonEdit;
+    private ImageButton noteColorButtonView;
     private Button markdownButtonBold;
     private Button markdownButtonItalique;
     private Button markdownButtonLink;
