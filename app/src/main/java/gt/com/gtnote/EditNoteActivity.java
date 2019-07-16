@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import gt.com.gtnote.Models.TextEditOperations;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
@@ -62,6 +63,12 @@ public class EditNoteActivity extends AppCompatActivity {
     private TextView noteTitleTextView;
     private Button noteColorButtonEdit;
     private Button noteColorButtonView;
+    private Button markdownButtonBold;
+    private Button markdownButtonItalique;
+    private Button markdownButtonLink;
+    private Button markdownButtonLinkNote;
+    
+    private TextEditOperations textEditOperations = new TextEditOperations();
     
     private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
     private String cssStyleSource;  // this style will be applied to the WebView showing the parsed NoteContent
@@ -134,6 +141,12 @@ public class EditNoteActivity extends AppCompatActivity {
         //Button
         noteColorButtonEdit = findViewById(R.id.noteColorButtonEdit);
         noteColorButtonView = findViewById(R.id.noteColorButtonView);
+        
+        // Markdown Menu
+        markdownButtonBold = findViewById(R.id.editNoteMarkdownButtonBold);
+        markdownButtonItalique = findViewById(R.id.editNoteMarkdownButtonItalique);
+        markdownButtonLink = findViewById(R.id.editNoteMarkdownButtonLink);
+        markdownButtonLinkNote = findViewById(R.id.editNoteMarkdownButtonLinkNote);
     }
 
     /**
@@ -203,6 +216,73 @@ public class EditNoteActivity extends AppCompatActivity {
                     return true;
                 }
             });
+        }
+        
+        markdownButtonBold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "**", "**");
+            }
+        });
+        
+        markdownButtonItalique.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "*", "*");
+            }
+        });
+        
+        markdownButtonLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "[", "](www.example.com)");
+            }
+        });
+        
+        markdownButtonLinkNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //todo: implement inserting note dialogue
+                Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    /**
+     * Surrounds the selection in the given EditText with these elements,
+     * or places them at the cursor's position.
+     * Also adjusts the cursor's position after inserting.
+     *
+     * @param editText
+     * @param elementBefore
+     * @param elementAfter
+     */
+    private void surroundWithElements(EditText editText, String elementBefore, String elementAfter) {
+        if (editText.hasSelection()) {
+            
+            // surround the selected part with the elements and
+            // place the cursor at the end of the original selected text
+            
+            String text = editText.getText().toString();
+            int start = editText.getSelectionStart();
+            int end = editText.getSelectionEnd();
+            
+            editText.setText(textEditOperations.surroundSelection(text, start, end, elementBefore, elementAfter));
+            
+            int cursorPosition = end + elementBefore.length();
+            editText.setSelection(cursorPosition, cursorPosition);
+            
+        } else {  // no selection, just cursor in text
+            
+            // insert the two elements and place the cursor between them
+            
+            String text = editText.getText().toString();
+            int start = editText.getSelectionStart();
+            
+            editText.setText(textEditOperations.insert(text, start, elementBefore+elementAfter));
+            
+            int cursorPosition = start + elementBefore.length();
+            editText.setSelection(cursorPosition, cursorPosition);
         }
     }
     
