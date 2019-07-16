@@ -188,7 +188,7 @@ public class EditNoteActivity extends AppCompatActivity {
         noteColorButtonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CurrentNoteSettings.class);
+                Intent intent = new Intent(getApplicationContext(), ColorPickingActivity.class);
                 //todo: intent.putExtra("colorHue", note.getNoteMeta().getColor().hue);
                 startActivityForResult(intent, 1);
             }
@@ -571,7 +571,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
 
         if (id == R.id.action_settings2) {
-            //Open CurrentNoteSettings
+            //Open ColorPickingActivity
         }
 
         return super.onOptionsItemSelected(item);

@@ -14,12 +14,12 @@ import gt.com.gtnote.Models.SubModels.Color;
 import static gt.com.gtnote.statics.Constants.COLOR_PICK_INTENT_KEY;
 import static gt.com.gtnote.statics.Constants.NUMBER_OF_COLORS;
 
-public class CurrentNoteSettings extends AppCompatActivity {
+public class ColorPickingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_current_note_settings);
+        setContentView(R.layout.activity_color_picking);
         
         setTitle("Color");  //todo: title looks ugly → remove title from layout, replace with textview
     
