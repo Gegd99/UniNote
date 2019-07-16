@@ -309,14 +309,23 @@ public class EditNoteActivity extends AppCompatActivity {
      */
     private void setMode(int typeID)
     {
-        noteTitleTextView.setText(note.getNoteMeta().getTitle());
-        String htmlString = getHTMLFromMarkdown(
-                note.getNoteContent().getText().toString(),
-                cssStyleSource);
-        
-        // baseUrl is necessary in order to catch links in simpler format
-        // otherwise, only links like https://www.google.com would be caught, but not www.google.de
-        noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
+        if(typeID == EDIT_NOTE_TYPE_ID)
+        {
+            noteTitleEditText.setText(note.getNoteMeta().getTitle());
+            noteEditText.setText(note.getNoteContent().getText());
+        }
+        else
+        {
+            noteTitleTextView.setText(note.getNoteMeta().getTitle());
+
+            String htmlString = getHTMLFromMarkdown(
+                    note.getNoteContent().getText().toString(),
+                    cssStyleSource);
+
+            // baseUrl is necessary in order to catch links in simpler format
+            // otherwise, only links like https://www.google.com would be caught, but not www.google.de
+            noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
+        }
 
         setLayoutType(typeID);
     }
