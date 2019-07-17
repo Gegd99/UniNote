@@ -1,9 +1,5 @@
 package gt.com.gtnote.Models;
 
-import android.os.Build;
-import android.text.Html;
-import android.text.Spanned;
-
 import java.util.List;
 
 import gt.com.gtnote.Interfaces.NoteContent;
@@ -14,7 +10,7 @@ import gt.com.gtnote.Models.SubModels.Resource;
  */
 class LazyNoteContent implements NoteContent {
     
-    private Spanned spanned;
+    private String text;
     private List<Resource> resources;
     private FilePointer filePointer;
     private boolean textLoaded;
@@ -30,21 +26,21 @@ class LazyNoteContent implements NoteContent {
      * @return the loaded content
      */
     @Override
-    public Spanned getText() {
+    public String getText() {
         if (!textLoaded) {
             loadText();
             textLoaded = true;
         }
-        return spanned;
+        return text;
     }
     
     /**
      * be careful: when you use this, the FilePointer's content will be ignored
-     * @param spanned
+     * @param text
      */
     @Override
-    public void setText(Spanned spanned) {
-        this.spanned = spanned;
+    public void setText(String text) {
+        this.text = text;
         textLoaded = true;
     }
     
@@ -59,13 +55,7 @@ class LazyNoteContent implements NoteContent {
     }
     
     private void loadText() {
-        // TODO: use an ImageGetter in Html.fromHtml()
         // https://stackoverflow.com/questions/37899856/html-fromhtml-is-deprecated-what-is-the-alternative/37899914
-        String source = filePointer.read();
-        if (Build.VERSION.SDK_INT >= 24) {
-            spanned = Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT);
-        } else {
-            spanned = Html.fromHtml(source);
-        }
+        text = filePointer.read();
     }
 }

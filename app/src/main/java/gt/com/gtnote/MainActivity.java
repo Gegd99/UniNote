@@ -7,8 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         // set data
         meta.setColor(Color.BLUE);
         meta.setTitle(titleString);
-        content.setText(new SpannableString(contentString));
+        content.setText(contentString);
 
         // write to file
         noteManager.save(note);
@@ -121,8 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         // get note instance and read content from file
         note = noteManager.getById(id);
         if (note != null) {
-            Spanned spanned = note.getNoteContent().getText();  // reads from file
-            String loadedContentString = spanned.toString();
+            String loadedContentString = note.getNoteContent().getText();  // reads from file
             Log.d(TAG, String.format("test: loaded content string: '''%s'''", loadedContentString));
 
             if (loadedContentString.equals(contentString)) {

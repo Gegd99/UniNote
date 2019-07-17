@@ -1,7 +1,5 @@
 package gt.com.gtnote.Models;
 
-import android.text.Spanned;
-
 import java.util.List;
 
 import gt.com.gtnote.Interfaces.NoteContent;
@@ -13,21 +11,21 @@ import gt.com.gtnote.Models.SubModels.Resource;
  */
 class PresentNoteContent implements NoteContent {
     
-    private Spanned spanned;
+    private String text;
     private List<Resource> resources;
     
-    PresentNoteContent(Spanned spanned) {
-        this.spanned = spanned;
+    PresentNoteContent(String text) {
+        this.text = text;
     }
     
     @Override
-    public Spanned getText() {
-        return spanned;
+    public String getText() {
+        return text;
     }
     
     @Override
-    public void setText(Spanned spanned) {
-        this.spanned = spanned;
+    public void setText(String text) {
+        this.text = text;
     }
     
     @Override

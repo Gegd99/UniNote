@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -552,7 +551,7 @@ public class EditNoteActivity extends AppCompatActivity {
             //meta.setColor();  //TODO
             meta.setLastEditTime(System.currentTimeMillis());
             
-            note.getNoteContent().setText(new SpannableString(noteEditText.getText()));
+            note.getNoteContent().setText(noteEditText.getText().toString());
 
             m_NoteManager.save(note);
             
