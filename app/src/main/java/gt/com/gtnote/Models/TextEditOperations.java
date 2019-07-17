@@ -33,4 +33,106 @@ public class TextEditOperations {
         String after = text.substring(cursorPosition);
         return before + content + after;
     }
+    
+    /**
+     * Cuts the string at a reasonable position.
+     * @param text
+     * @param minLength
+     * @param maxLength
+     * @param newlineWeight how many characters a newline is equal to
+     * @return
+     */
+    public String cutToReasonableLength(String text, int minLength, int maxLength, int newlineWeight) {
+        int currentLength = 0;
+        int index = 0;
+        
+        // reach minLength
+        while (currentLength < minLength && index < text.length() - 1) {
+            char c = text.charAt(index);
+            
+            if (c == '\n') {
+                currentLength += newlineWeight;
+            } else {
+                currentLength += 1;
+            }
+            index++;
+        }
+        
+        // return if string end is already reached
+        if (index == text.length()) {
+            return text;
+        }
+        
+        // save this as the first reasonable index, in case nothing better appears
+        int reasonableIndex = index;
+        
+        // now look until maxLength is reached if something better appears
+        
+        if (maxLength > text.length()) {
+            maxLength = text.length();
+        }
+        
+        while (currentLength < maxLength) {
+            char c = text.charAt(index);
+    
+            if (c == ' ' || c == '\n') {
+                reasonableIndex = index;
+                break;
+            } else {
+                currentLength++;
+            }
+            
+            index++;
+        }
+        
+        return text.substring(0, reasonableIndex + 1);
+    }
+    
+    /**
+     * Just for layout testing.
+     * @param minWords
+     * @param maxWords
+     * @return
+     */
+    public String getRandomString(int minWords, int maxWords) {
+        int numberOfWords = minWords + (int) Math.floor(1 + Math.random() * (maxWords - minWords));
+        String[] words = new String[] {
+                "a man", "war", "peace", "apple", "avocado", "tree",
+                "looks", "walks", "screams", "whispers", "dreams",
+                "evil",  "good", "very long", "incredibly stupid", "hostile", "fragile",
+        };
+        StringBuilder sb = new StringBuilder();
+        boolean sentenceStart = true;
+        for (int i = 0; i < numberOfWords; i++) {
+            String word = words[(int) Math.floor(Math.random() * words.length)];
+            
+            if (sentenceStart) {
+                sentenceStart = false;
+                
+                // capitalize first letter
+                sb.append(word.substring(0, 1).toUpperCase());
+                sb.append(word.substring(1));
+            } else {
+                sb.append(word);
+            }
+            
+            if (Math.random() < 0.2) {
+                sentenceStart = true;
+                sb.append(".");
+            }
+            
+            if (i + 1 < numberOfWords) {
+    
+                if (sentenceStart && Math.random() < 0.5) {
+                    sb.append("\n");
+                } else {
+                    sb.append(" ");
+                }
+            }
+        }
+        if (!sentenceStart) {
+            sb.append(".");
+        }
+        return sb.toString();
+    }
 }
