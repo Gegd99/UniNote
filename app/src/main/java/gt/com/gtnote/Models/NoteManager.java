@@ -1,9 +1,5 @@
 package gt.com.gtnote.Models;
 
-import android.os.Build;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -104,7 +100,7 @@ public class NoteManager {
                 System.currentTimeMillis(),
                 System.currentTimeMillis()
         );
-        NoteContent content = new PresentNoteContent(new SpannableString(""));
+        NoteContent content = new PresentNoteContent("");
         Note note = new Note(meta, content);
         insertNote(note);
         return note;
@@ -225,14 +221,7 @@ public class NoteManager {
      */
     private void saveContent(Note note) {
         
-        Spanned spanned = note.getNoteContent().getText();
-        String source = null;
-        if (Build.VERSION.SDK_INT >= 24) {
-            source = Html.toHtml(spanned, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-            // maybe Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL is better
-        } else {
-            source = Html.toHtml(spanned);
-        }
+        String source = note.getNoteContent().getText();
         
         String contentFilePath = filePathFromNoteId(note.getNoteMeta().getNoteId());
         fileIO.write(contentFilePath, source);
