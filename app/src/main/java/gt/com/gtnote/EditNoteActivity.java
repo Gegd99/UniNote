@@ -304,13 +304,15 @@ public class EditNoteActivity extends AppCompatActivity {
      * @param elementAfter
      */
     private void surroundWithElements(EditText editText, String elementBefore, String elementAfter) {
+    
+        String text = editText.getText().toString();
+        int start = editText.getSelectionStart();
+        
         if (editText.hasSelection()) {
             
             // surround the selected part with the elements and
             // place the cursor at the end of the original selected text
             
-            String text = editText.getText().toString();
-            int start = editText.getSelectionStart();
             int end = editText.getSelectionEnd();
             
             editText.setText(textEditOperations.surroundSelection(text, start, end, elementBefore, elementAfter));
@@ -319,16 +321,29 @@ public class EditNoteActivity extends AppCompatActivity {
             editText.setSelection(cursorPosition, cursorPosition);
             
         } else {  // no selection, just cursor in text
+            // "start" is cursor position
             
-            // insert the two elements and place the cursor between them
-            
-            String text = editText.getText().toString();
-            int start = editText.getSelectionStart();
-            
-            editText.setText(textEditOperations.insert(text, start, elementBefore+elementAfter));
-            
-            int cursorPosition = start + elementBefore.length();
-            editText.setSelection(cursorPosition, cursorPosition);
+            // check whether cursor is inside a word
+            if (textEditOperations.isCursorTouchingWord(text, start)) {
+                
+                // find surrounding indices and treat them like selection start & end
+                
+                int end = textEditOperations.findWordEnd(text, start) + 1;
+                start = textEditOperations.findWordBeginning(text, start);
+    
+                editText.setText(textEditOperations.surroundSelection(text, start, end, elementBefore, elementAfter));
+    
+                int cursorPosition = end + elementBefore.length();
+                editText.setSelection(cursorPosition, cursorPosition);
+                
+            } else {
+                // insert the two elements and place the cursor between them
+    
+                editText.setText(textEditOperations.insert(text, start, elementBefore+elementAfter));
+    
+                int cursorPosition = start + elementBefore.length();
+                editText.setSelection(cursorPosition, cursorPosition);
+            }
         }
     }
     

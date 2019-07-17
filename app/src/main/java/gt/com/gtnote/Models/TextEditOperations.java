@@ -33,4 +33,69 @@ public class TextEditOperations {
         String after = text.substring(cursorPosition);
         return before + content + after;
     }
+    
+    /**
+     * returns true if the cursor is one of these:
+     * <ul>
+     *     <li>set at the beginning of a word</li>
+     *     <li>set at the end of a word</li>
+     *     <li>inside the word</li>
+     * </ul>
+     *
+     * @param text
+     * @param cursorPosition should be >= 0 and < text.length()
+     * @return
+     */
+    public boolean isCursorTouchingWord(String text, int cursorPosition) {
+        int indexLeft = cursorPosition - 1;
+        int indexRight = cursorPosition;
+        
+        char left = ' ';
+        char right = ' ';
+        
+        if (indexLeft >= 0) {
+            left = text.charAt(indexLeft);
+        }
+        if (indexRight < text.length()) {
+            right = text.charAt(indexRight);
+        }
+        
+        return !isWhitespace(left) || !isWhitespace(right);
+    }
+    
+    public boolean isWhitespace(char character) {
+        return character == ' ' || character == '\n';
+    }
+    
+    /**
+     * Finds first character of the touched word.
+     * @param text
+     * @param cursorPosition if the cursor was placed here, it would touch the word
+     * @return index of the first character of the touched word
+     */
+    public int findWordBeginning(String text, int cursorPosition) {
+        while (cursorPosition > 0) {
+            cursorPosition--;
+            if (isWhitespace(text.charAt(cursorPosition))) {
+                return cursorPosition + 1;
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Finds last character of the touched word.
+     * @param text
+     * @param cursorPosition if the cursor was placed here, it would touch the word
+     * @return index of the last character of the touched word
+     */
+    public int findWordEnd(String text, int cursorPosition) {
+        while (cursorPosition < text.length()) {
+            if (isWhitespace(text.charAt(cursorPosition))) {
+                return cursorPosition - 1;
+            }
+            cursorPosition++;
+        }
+        return text.length() - 1;
+    }
 }
