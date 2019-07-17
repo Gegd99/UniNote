@@ -25,7 +25,10 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.markdown4j.Markdown4jProcessor;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
@@ -72,6 +75,8 @@ public class EditNoteActivity extends AppCompatActivity {
     
     private Markdown4jProcessor markdown4jProcessor = new Markdown4jProcessor();
     private String cssStyleSource;  // this style will be applied to the WebView showing the parsed NoteContent
+    private String syntaxHighlightingJavascriptSource;
+    private String syntaxHighlightingCssSource;
     private String baseUrl = "gtnote://gtnote.com/";  // random prefix for all links to fix detection of link clicks
 
     @Override
@@ -80,6 +85,8 @@ public class EditNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_note);
     
         cssStyleSource = getString(R.string.note_webview_css);
+        syntaxHighlightingJavascriptSource = readRawTextFile(R.raw.prism_js);
+        syntaxHighlightingCssSource = readRawTextFile(R.raw.prism_css);
 
         findViews();
         attachListeners();
@@ -193,6 +200,9 @@ public class EditNoteActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
+        
+        // allow javascript execution for syntax highlighting
+        noteWebView.getSettings().setJavaScriptEnabled(true);
         
         // Force WebView to open links in external browser
         // instead of displaying them inside the WebView.
@@ -493,7 +503,9 @@ public class EditNoteActivity extends AppCompatActivity {
 
             String htmlString = getHTMLFromMarkdown(
                     note.getNoteContent().getText().toString(),
-                    cssStyleSource);
+                    cssStyleSource + "\n" + syntaxHighlightingCssSource);
+    
+            Log.d(TAG, "htmlString: "+htmlString);
 
             // baseUrl is necessary in order to catch links in simpler format
             // otherwise, only links like https://www.google.com would be caught, but not www.google.de
@@ -507,8 +519,8 @@ public class EditNoteActivity extends AppCompatActivity {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
             htmlString = String.format(
-                    "<html><head><style>%s</style></head><body>%s</body></html>",  // build a website with styling
-                    cssSource, htmlString);
+                    "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script></body></html>",  // build a website with styling
+                    cssSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
             return htmlString;
         } catch (IOException e) {
             e.printStackTrace();
@@ -530,6 +542,28 @@ public class EditNoteActivity extends AppCompatActivity {
                 noteViewLayout.setVisibility(View.VISIBLE);
                 noteEditLayout.setVisibility(View.GONE);
                 break;
+        }
+    }
+    
+    /**
+     * Do not call this before Activity.onCreate()
+     * @param resourceId
+     * @return
+     */
+    private String readRawTextFile(int resourceId) {
+        try (InputStream in = getResources().openRawResource(resourceId)) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder builder = new StringBuilder();
+            String line = reader.readLine();
+            while (line != null) {
+                builder.append(line);
+                builder.append("\n");
+                line = reader.readLine();
+            }
+            return builder.toString();
+        } catch (IOException e) {
+            Log.e(TAG, "readRawTextFile: error while reading resource of id="+resourceId, e);
+            return "";
         }
     }
     
