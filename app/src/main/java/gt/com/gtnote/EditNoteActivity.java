@@ -70,6 +70,10 @@ public class EditNoteActivity extends AppCompatActivity {
     private Button markdownButtonItalique;
     private Button markdownButtonLink;
     private Button markdownButtonLinkNote;
+    private Button markdownButtonBulletList;
+    private Button markdownButtonHeadline;
+    private Button markdownButtonQuote;
+    private Button markdownButtonCode;
     
     private TextEditOperations textEditOperations = new TextEditOperations();
     
@@ -154,6 +158,10 @@ public class EditNoteActivity extends AppCompatActivity {
         markdownButtonItalique = findViewById(R.id.editNoteMarkdownButtonItalique);
         markdownButtonLink = findViewById(R.id.editNoteMarkdownButtonLink);
         markdownButtonLinkNote = findViewById(R.id.editNoteMarkdownButtonLinkNote);
+        markdownButtonBulletList = findViewById(R.id.editNoteMarkdownButtonBulletList);
+        markdownButtonHeadline = findViewById(R.id.editNoteMarkdownButtonHeadline);
+        markdownButtonQuote = findViewById(R.id.editNoteMarkdownButtonQuote);
+        markdownButtonCode = findViewById(R.id.editNoteMarkdownButtonCode);
     }
 
     /**
@@ -254,6 +262,34 @@ public class EditNoteActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //todo: implement inserting note dialogue
                 Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        markdownButtonBulletList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "* ", "");
+            }
+        });
+        
+        markdownButtonHeadline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "# ", "");
+            }
+        });
+        
+        markdownButtonQuote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "> ", "");
+            }
+        });
+        
+        markdownButtonCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "```lang-", "\n```");
             }
         });
     }
