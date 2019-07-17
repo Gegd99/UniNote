@@ -501,9 +501,7 @@ public class EditNoteActivity extends AppCompatActivity {
         {
             noteTitleTextView.setText(note.getNoteMeta().getTitle());
 
-            String htmlString = getHTMLFromMarkdown(
-                    note.getNoteContent().getText().toString(),
-                    cssStyleSource + "\n" + syntaxHighlightingCssSource);
+            String htmlString = getHTMLFromMarkdown(note.getNoteContent().getText());
     
             Log.d(TAG, "htmlString: "+htmlString);
 
@@ -515,12 +513,12 @@ public class EditNoteActivity extends AppCompatActivity {
         setLayoutType(typeID);
     }
     
-    private String getHTMLFromMarkdown(String markdownSource, String cssSource) {
+    private String getHTMLFromMarkdown(String markdownSource) {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
             htmlString = String.format(
                     "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script></body></html>",  // build a website with styling
-                    cssSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
+                    cssStyleSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
             return htmlString;
         } catch (IOException e) {
             e.printStackTrace();
