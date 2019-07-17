@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/note_in_list_layout">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/colorPrimary">
+        app:cardBackgroundColor="@color/colorPrimary">
+
         <TextView
             android:id="@+id/note_in_list_title"
             android:layout_width="wrap_content"
@@ -34,7 +35,7 @@
             android:background="@android:color/black"
             android:paddingBottom="2dp"/>
 
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 
-</RelativeLayout>
+</LinearLayout>

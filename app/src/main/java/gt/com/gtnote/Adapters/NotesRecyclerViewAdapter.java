@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,7 +40,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     {
         TextView title;
         TextView description;
-        RelativeLayout layout;
+        LinearLayout layout;
         OnNoteListener onNoteListener;
 
         public ViewHolder(View noteView, OnNoteListener onNoteListener)
