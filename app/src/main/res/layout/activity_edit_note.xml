@@ -28,7 +28,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@color/colorPrimaryDark"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:elevation="@dimen/note_header_elevation">
 
                     <EditText
                         android:id="@+id/noteTitleEditText"
@@ -43,16 +44,17 @@
                         android:textSize="24dp"
                         />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/noteColorButtonEdit"
                         android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        />
+                        android:layout_height="60dp" />
 
                 </LinearLayout>
 
                 <!-- menu: markdown utility -->
                 <HorizontalScrollView
+                    android:scrollbars="none"
+                    android:background="@color/colorNoteBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -63,9 +65,7 @@
 
                         <Button
                             android:id="@+id/editNoteMarkdownButtonBold"
-                            android:text="B"
-                            android:textStyle="bold"
-                            android:fontFamily="monospace"
+                            android:drawableStart="@drawable/icon_format_bold"
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -73,9 +73,23 @@
 
                         <Button
                             android:id="@+id/editNoteMarkdownButtonItalique"
-                            android:text="I"
-                            android:textStyle="italic"
-                            android:fontFamily="monospace"
+                            android:drawableStart="@drawable/icon_format_italic"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonBulletList"
+                            android:drawableStart="@drawable/icon_format_bullet_list"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonHeadline"
+                            android:drawableStart="@drawable/icon_format_headline"
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -83,6 +97,8 @@
 
                         <Button
                             android:id="@+id/editNoteMarkdownButtonLink"
+                            android:drawableStart="@drawable/icon_format_link_website"
+                            android:drawablePadding="8dp"
                             android:text="Link"
                             android:textAllCaps="false"
                             android:fontFamily="monospace"
@@ -93,9 +109,19 @@
 
                         <Button
                             android:id="@+id/editNoteMarkdownButtonLinkNote"
+                            android:drawableStart="@drawable/icon_format_link_note"
+                            android:drawablePadding="8dp"
                             android:text="Note"
                             android:textAllCaps="false"
                             android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonQuote"
+                            android:drawableStart="@drawable/icon_format_quote"
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -112,6 +138,7 @@
                     android:inputType="text|textMultiLine|textCapSentences"
                     android:fontFamily="monospace"
                     android:textSize="24dp"
+                    android:background="@color/colorNoteBackground"
                     android:layout_margin="0dp"
                     android:padding="12dp"
                     />
@@ -137,7 +164,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@color/colorPrimaryDark"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:elevation="@dimen/note_header_elevation">
 
                     <TextView
                         android:id="@+id/noteTitleTextView"
@@ -151,7 +179,7 @@
                         android:gravity="center_vertical"
                         />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/noteColorButtonView"
                         android:layout_width="60dp"
                         android:layout_height="60dp" />
