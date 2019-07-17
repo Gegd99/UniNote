@@ -15,5 +15,13 @@
             height: auto;
         }
 
+        code {
+            display: inline-block;  /* for correctly rendering border */
+            background: #F5F5F5;
+            padding: 12px;
+            border-radius: 3px;
+            font-size: 75%;
+        }
+
     </string>
 </resources>
