@@ -11,7 +11,8 @@
         }
 
         img {
-            width: 100%;
+            max-width: 100%;  /* scale everything down to view width, but keep size of all smaller images */
+            image-rendering: pixelated;  /* for good rendering on high density displays */
             height: auto;
         }
 
