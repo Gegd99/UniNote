@@ -11,16 +11,34 @@
         }
 
         img {
-            width: 100%;
+            max-width: 100%;  /* scale everything down to view width, but keep size of all smaller images */
+            image-rendering: pixelated;  /* for good rendering on high density displays */
             height: auto;
         }
 
         code {
             display: inline-block;  /* for correctly rendering border */
             background: #F5F5F5;
-            padding: 12px;
-            border-radius: 3px;
+            padding: 10px;
+            border-radius: 2px;
             font-size: 75%;
+        }
+
+        blockquote {
+            font-family: serif-monospace;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+
+            padding: 10px;
+            border-radius: 2px;
+
+            box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        blockquote p {  /* avoid vertical margins */
+            display: inline;
         }
 
     </string>

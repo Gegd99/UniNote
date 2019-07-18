@@ -19,7 +19,7 @@
 
             <LinearLayout
                 android:id="@+id/noteEditLayout"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -53,6 +53,7 @@
 
                 <!-- menu: markdown utility -->
                 <HorizontalScrollView
+                    style="?android:attr/buttonBarStyle"
                     android:scrollbars="none"
                     android:background="@color/colorNoteBackground"
                     android:layout_width="match_parent"
@@ -69,6 +70,7 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                         <Button
@@ -77,6 +79,7 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                         <Button
@@ -85,6 +88,7 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                         <Button
@@ -93,6 +97,7 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                         <Button
@@ -105,6 +110,33 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonQuote"
+                            android:drawableStart="@drawable/icon_format_quote"
+                            android:drawablePadding="8dp"
+                            android:text="Quote"
+                            android:textAllCaps="false"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
+                            />
+
+                        <Button
+                            android:id="@+id/editNoteMarkdownButtonCode"
+                            android:drawableStart="@drawable/icon_format_code"
+                            android:drawablePadding="8dp"
+                            android:text="Code"
+                            android:textAllCaps="false"
+                            android:fontFamily="monospace"
+                            android:minWidth="@dimen/menu_button_min_width"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                         <Button
@@ -117,14 +149,7 @@
                             android:minWidth="@dimen/menu_button_min_width"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            />
-
-                        <Button
-                            android:id="@+id/editNoteMarkdownButtonQuote"
-                            android:drawableStart="@drawable/icon_format_quote"
-                            android:minWidth="@dimen/menu_button_min_width"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            style="?android:attr/buttonBarButtonStyle"
                             />
 
                     </LinearLayout>
