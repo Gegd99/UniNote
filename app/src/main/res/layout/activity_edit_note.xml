@@ -25,9 +25,10 @@
                 android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:id="@+id/noteHeaderEditMode"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="#fff"
                     android:gravity="center_vertical"
                     android:elevation="@dimen/note_header_elevation">
 
@@ -46,6 +47,7 @@
 
                     <ImageButton
                         android:id="@+id/noteColorButtonEdit"
+                        app:srcCompat="@drawable/icon_pick_color"
                         android:layout_width="60dp"
                         android:layout_height="60dp" />
 
@@ -186,9 +188,10 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
+                    android:id="@+id/noteHeaderViewMode"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="#fff"
                     android:gravity="center_vertical"
                     android:elevation="@dimen/note_header_elevation">
 
@@ -204,8 +207,7 @@
                         android:gravity="center_vertical"
                         />
 
-                    <ImageButton
-                        android:id="@+id/noteColorButtonView"
+                    <Space
                         android:layout_width="60dp"
                         android:layout_height="60dp" />
 

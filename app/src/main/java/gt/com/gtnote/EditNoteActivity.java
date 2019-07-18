@@ -65,7 +65,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
     private ImageButton noteColorButtonEdit;
-    private ImageButton noteColorButtonView;
+    private View noteHeaderEditMode;
+    private View noteHeaderViewMode;
     private Button markdownButtonBold;
     private Button markdownButtonItalique;
     private Button markdownButtonLink;
@@ -151,7 +152,9 @@ public class EditNoteActivity extends AppCompatActivity {
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
         //Button
         noteColorButtonEdit = findViewById(R.id.noteColorButtonEdit);
-        noteColorButtonView = findViewById(R.id.noteColorButtonView);
+    
+        noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
+        noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
         
         // Markdown Menu
         markdownButtonBold = findViewById(R.id.editNoteMarkdownButtonBold);
@@ -532,9 +535,14 @@ public class EditNoteActivity extends AppCompatActivity {
         
         int androidColor = android.graphics.Color.rgb(color.red, color.green, color.blue);
         
-        // change *both* buttons (edit mode and preview mode)
+        // change layout in edit mode and in preview mode
         noteColorButtonEdit.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
-        noteColorButtonView.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        noteHeaderEditMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        noteHeaderViewMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        // force android to render changes
+        noteColorButtonEdit.invalidate();
+        noteHeaderViewMode.invalidate();
+        noteHeaderEditMode.invalidate();
     }
 
     /**
@@ -632,7 +640,6 @@ public class EditNoteActivity extends AppCompatActivity {
     
             NoteMeta meta = note.getNoteMeta();
             meta.setTitle(noteTitleEditText.getText().toString());
-            //meta.setColor();  //TODO
             meta.setLastEditTime(System.currentTimeMillis());
             
             note.getNoteContent().setText(noteEditText.getText().toString());
