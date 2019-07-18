@@ -2,17 +2,13 @@ package gt.com.gtnote.Models.SubModels;
 
 public enum Color
 {
-    UNKNOWN(-1, 128, 128, 128),
-    RED(0, 255, 0, 0),
-    ORANGE(1, 255, 128, 0),
-    YELLOW(2, 255, 255, 0),
-    GREEN(3, 0, 255, 0),
-    CYAN(4, 0, 255, 255),
-    BLUE(5, 0, 0, 255),
-    VIOLET(6, 128, 0, 255),
-    PINK(7, 255, 0, 255),
-    BLACK(8, 0, 0, 0),
-    WHITE(9, 255, 255, 255),
+    UNKNOWN(-1, 200, 200, 200),  // #
+    RED(0, 248, 13, 27),  // #F80D1B
+    ORANGE(1, 255, 160, 0),  // #FFA000
+    YELLOW(2, 255, 227, 2),  // #FFE302
+    GREEN(3, 0, 250, 34),  // #00FA22
+    BLUE(4, 0, 169, 238),  // #00A9EE
+    VIOLET(5, 159, 0, 255),  // #9F00FF
     ;
     
     public final int id;
