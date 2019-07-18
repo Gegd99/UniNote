@@ -70,6 +70,10 @@ public class EditNoteActivity extends AppCompatActivity {
     private Button markdownButtonItalique;
     private Button markdownButtonLink;
     private Button markdownButtonLinkNote;
+    private Button markdownButtonBulletList;
+    private Button markdownButtonHeadline;
+    private Button markdownButtonQuote;
+    private Button markdownButtonCode;
     
     private TextEditOperations textEditOperations = new TextEditOperations();
     
@@ -154,6 +158,10 @@ public class EditNoteActivity extends AppCompatActivity {
         markdownButtonItalique = findViewById(R.id.editNoteMarkdownButtonItalique);
         markdownButtonLink = findViewById(R.id.editNoteMarkdownButtonLink);
         markdownButtonLinkNote = findViewById(R.id.editNoteMarkdownButtonLinkNote);
+        markdownButtonBulletList = findViewById(R.id.editNoteMarkdownButtonBulletList);
+        markdownButtonHeadline = findViewById(R.id.editNoteMarkdownButtonHeadline);
+        markdownButtonQuote = findViewById(R.id.editNoteMarkdownButtonQuote);
+        markdownButtonCode = findViewById(R.id.editNoteMarkdownButtonCode);
     }
 
     /**
@@ -256,6 +264,34 @@ public class EditNoteActivity extends AppCompatActivity {
                 Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
             }
         });
+        
+        markdownButtonBulletList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "* ", "");
+            }
+        });
+        
+        markdownButtonHeadline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "# ", "");
+            }
+        });
+        
+        markdownButtonQuote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "> ", "");
+            }
+        });
+        
+        markdownButtonCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "```lang-", "\n```");
+            }
+        });
     }
     
     /**
@@ -268,13 +304,15 @@ public class EditNoteActivity extends AppCompatActivity {
      * @param elementAfter
      */
     private void surroundWithElements(EditText editText, String elementBefore, String elementAfter) {
+    
+        String text = editText.getText().toString();
+        int start = editText.getSelectionStart();
+        
         if (editText.hasSelection()) {
             
             // surround the selected part with the elements and
             // place the cursor at the end of the original selected text
             
-            String text = editText.getText().toString();
-            int start = editText.getSelectionStart();
             int end = editText.getSelectionEnd();
             
             editText.setText(textEditOperations.surroundSelection(text, start, end, elementBefore, elementAfter));
@@ -283,16 +321,29 @@ public class EditNoteActivity extends AppCompatActivity {
             editText.setSelection(cursorPosition, cursorPosition);
             
         } else {  // no selection, just cursor in text
+            // "start" is cursor position
             
-            // insert the two elements and place the cursor between them
-            
-            String text = editText.getText().toString();
-            int start = editText.getSelectionStart();
-            
-            editText.setText(textEditOperations.insert(text, start, elementBefore+elementAfter));
-            
-            int cursorPosition = start + elementBefore.length();
-            editText.setSelection(cursorPosition, cursorPosition);
+            // check whether cursor is inside a word
+            if (textEditOperations.isCursorTouchingWord(text, start)) {
+                
+                // find surrounding indices and treat them like selection start & end
+                
+                int end = textEditOperations.findWordEnd(text, start) + 1;
+                start = textEditOperations.findWordBeginning(text, start);
+    
+                editText.setText(textEditOperations.surroundSelection(text, start, end, elementBefore, elementAfter));
+    
+                int cursorPosition = end + elementBefore.length();
+                editText.setSelection(cursorPosition, cursorPosition);
+                
+            } else {
+                // insert the two elements and place the cursor between them
+    
+                editText.setText(textEditOperations.insert(text, start, elementBefore+elementAfter));
+    
+                int cursorPosition = start + elementBefore.length();
+                editText.setSelection(cursorPosition, cursorPosition);
+            }
         }
     }
     
@@ -501,9 +552,7 @@ public class EditNoteActivity extends AppCompatActivity {
         {
             noteTitleTextView.setText(note.getNoteMeta().getTitle());
 
-            String htmlString = getHTMLFromMarkdown(
-                    note.getNoteContent().getText().toString(),
-                    cssStyleSource + "\n" + syntaxHighlightingCssSource);
+            String htmlString = getHTMLFromMarkdown(note.getNoteContent().getText());
     
             Log.d(TAG, "htmlString: "+htmlString);
 
@@ -515,12 +564,12 @@ public class EditNoteActivity extends AppCompatActivity {
         setLayoutType(typeID);
     }
     
-    private String getHTMLFromMarkdown(String markdownSource, String cssSource) {
+    private String getHTMLFromMarkdown(String markdownSource) {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
             htmlString = String.format(
                     "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script></body></html>",  // build a website with styling
-                    cssSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
+                    cssStyleSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
             return htmlString;
         } catch (IOException e) {
             e.printStackTrace();
