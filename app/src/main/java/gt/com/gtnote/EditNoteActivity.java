@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -82,6 +83,12 @@ public class EditNoteActivity extends AppCompatActivity {
     private String syntaxHighlightingJavascriptSource;
     private String syntaxHighlightingCssSource;
     private String baseUrl = "gtnote://gtnote.com/";  // random prefix for all links to fix detection of link clicks
+    
+    // font scaling:
+    private int currentFontSize = 24;
+    private float requestedFontSize = currentFontSize;
+    private int minRequestableFontSize = 8;
+    private int maxRequestableFontSize = 64;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,8 +176,10 @@ public class EditNoteActivity extends AppCompatActivity {
      */
     private void attachListeners()
     {
-        // TextViewListener which handles double tap
+        // listener for touch events
         View.OnTouchListener doubleTabEditListener = new View.OnTouchListener() {
+            
+            // detect double tap
             private GestureDetector gestureDetector = new GestureDetector(EditNoteActivity.this, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
@@ -186,11 +195,37 @@ public class EditNoteActivity extends AppCompatActivity {
                     return super.onDoubleTap(event);
                 }
             });
+            
+            // detect pinch (zoom)
+            private ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(EditNoteActivity.this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    
+                    requestedFontSize *= detector.getScaleFactor();
+                    if (requestedFontSize < minRequestableFontSize) {
+                        requestedFontSize = minRequestableFontSize;
+                    } else if (requestedFontSize > maxRequestableFontSize) {
+                        requestedFontSize = maxRequestableFontSize;
+                    }
+                    
+                    int requestedFontSizeResult = (int) requestedFontSize;  // only whole numbers
+                    
+                    // only update UI if necessary
+                    if (requestedFontSizeResult != currentFontSize) {
+                        currentFontSize = requestedFontSizeResult;
+                        onFontSizeChanged();
+                    }
+                    
+                    return true;
+                }
+            });
+            
             @Override
             public boolean onTouch(View view, MotionEvent event) {
 
                 if (noteViewLayout.getVisibility() == View.VISIBLE) {  // just making sure... (probably not necessary)
                     gestureDetector.onTouchEvent(event);
+                    scaleGestureDetector.onTouchEvent(event);
                 }
                 return false;
             }
@@ -568,13 +603,33 @@ public class EditNoteActivity extends AppCompatActivity {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
             htmlString = String.format(
-                    "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script></body></html>",  // build a website with styling
-                    cssStyleSource, syntaxHighlightingCssSource, htmlString, syntaxHighlightingJavascriptSource);
+                    "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script><script>%s</script></body></html>",  // build a website with styling
+                    cssStyleSource, syntaxHighlightingCssSource, htmlString, getFontSizeJavascript(), syntaxHighlightingJavascriptSource);
             return htmlString;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    private void onFontSizeChanged() {
+        
+        if (noteViewLayout.getVisibility() == View.VISIBLE) {
+            
+            // inject javascript code for changing font size
+            noteWebView.loadUrl("javascript:"+getFontSizeJavascript());
+        }
+    }
+    
+    /**
+     * This can be injected into the WebView in
+     * order to adapt the font of the body element.
+     *
+     * @return the javascript code that will change the font size upon execution
+     */
+    private String getFontSizeJavascript() {
+        String template= "(function() {document.getElementsByTagName(\"body\")[0].style.fontSize = \"%spx\";})()";
+        return String.format(template, String.valueOf(currentFontSize));
     }
     
     /**
