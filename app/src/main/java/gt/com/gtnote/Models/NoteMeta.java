@@ -6,26 +6,22 @@ public class NoteMeta
 {
     private int noteId;
     private String title;
+    private String previewNoteContent;
     private Color color;
     private long creationTime;  // unix timestamp (in milliseconds)
     private long lastEditTime;  // unix timestamp (in milliseconds)
-    //private int noteType
-    private int contentSize;  // todo: provide this value
     
-    NoteMeta(int noteId, String title, Color color, long creationTime, long lastEditTime) {
+    NoteMeta(int noteId, String title, String previewNoteContent ,Color color, long creationTime, long lastEditTime) {
         this.noteId = noteId;
         this.title = title;
         this.color = color;
         this.creationTime = creationTime;
         this.lastEditTime = lastEditTime;
+        this.previewNoteContent = previewNoteContent;
     }
     
     public int getNoteId() {
         return noteId;
-    }
-    
-    public void setNoteId(int noteId) {
-        this.noteId = noteId;
     }
     
     public String getTitle() {
@@ -34,6 +30,14 @@ public class NoteMeta
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPreviewNoteContent() {
+        return previewNoteContent;
+    }
+
+    public void setPreviewNoteContent(String previewNoteContent) {
+        this.previewNoteContent = previewNoteContent;
     }
 
     public Color getColor() {
@@ -48,23 +52,11 @@ public class NoteMeta
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
-    }
-
     public long getLastEditTime() {
         return lastEditTime;
     }
 
     public void setLastEditTime(long lastEditTime) {
         this.lastEditTime = lastEditTime;
-    }
-
-    public int getContentSize() {
-        return contentSize;
-    }
-
-    public void setContentSize(int contentSize) {
-        this.contentSize = contentSize;
     }
 }

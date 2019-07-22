@@ -95,7 +95,8 @@ public class NoteManager {
     public Note createNote() {
         NoteMeta meta = new NoteMeta(
                 getLowestAvailableId(),
-                "unnamed",
+                "",
+                "",
                 Color.UNKNOWN,
                 System.currentTimeMillis(),
                 System.currentTimeMillis()
@@ -193,12 +194,20 @@ public class NoteManager {
         boolean metaFound = false;
 
         for (int i = 0; i < allMetas.length(); i++) {
-            JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
-            NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
-        
-            if (otherMeta.getNoteId() == meta.getNoteId()) {
-                allMetas.put(i, metaJSONObject);
-                metaFound = true;
+            try
+            {
+                JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
+                NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
+
+                if (otherMeta.getNoteId() == meta.getNoteId()) {
+                    allMetas.put(i, metaJSONObject);
+                    metaFound = true;
+                    break;
+                }
+            }
+            catch (JSONException e)
+            {
+                Log.d(TAG, "A NoteMeta object is missing an entry: ", e);
                 break;
             }
         }

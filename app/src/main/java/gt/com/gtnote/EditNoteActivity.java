@@ -692,11 +692,15 @@ public class EditNoteActivity extends AppCompatActivity {
         try {
     
             // apply changes
-    
+
+
+            //Update NoteMeta
             NoteMeta meta = note.getNoteMeta();
             meta.setTitle(noteTitleEditText.getText().toString());
             meta.setLastEditTime(System.currentTimeMillis());
-            
+            meta.setPreviewNoteContent(textEditOperations.cutToRandomLength(noteEditText.getText().toString()));
+
+            //Update NoteContent
             note.getNoteContent().setText(noteEditText.getText().toString());
 
             m_NoteManager.save(note);
