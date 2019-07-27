@@ -27,8 +27,10 @@ import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
 
 import gt.com.gtnote.Models.NoteMeta;
+import gt.com.gtnote.Models.SettingsManager;
 import gt.com.gtnote.Models.SubModels.Color;
 import gt.com.gtnote.dagger.NoteManagerComponent;
+import gt.com.gtnote.dagger.SettingsManagerComponent;
 
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
 import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private RecyclerView.Adapter mAdapter;
 
     @Inject NoteManager m_NoteManager;
+    @Inject SettingsManager m_SettingsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         findViews();
 
-        initNoteManager();
+        injectManagers();
 
         //TODO: Update mAdapter if anything in NoteManager changes
 
@@ -145,11 +148,18 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
-    public void initNoteManager()
+    /**
+     * Injects NoteManager and SettingsManager.
+     */
+    public void injectManagers()
     {
         NoteManagerComponent noteManagerComponent = ((ApplicationClass) getApplication()).getNoteManagerComponent();
 
         noteManagerComponent.inject(this);
+
+        SettingsManagerComponent settingsManagerComponent = ((ApplicationClass) getApplication()).getSettingsManagerComponent();
+
+        settingsManagerComponent.inject(this);
     }
 
     private void createNewNote()

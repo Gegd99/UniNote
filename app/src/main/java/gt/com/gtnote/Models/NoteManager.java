@@ -39,7 +39,7 @@ public class NoteManager {
         try {
             loadAll();
         } catch (JSONException e) {
-            Log.e(TAG, String.format("An error occured while loading the notes."));
+            Log.e(TAG, String.format("An error occurred while loading the notes."));
             e.printStackTrace();
         }
         NoteManager.instance = this;  //TODO: remove this ugly line of code
