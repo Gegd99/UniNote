@@ -4,18 +4,14 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -52,15 +48,10 @@ import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
 public class EditNoteActivity extends AppCompatActivity {
     
     private static final String TAG = "GTNOTE";
-    
-    private final int NOTE_NOT_EXISTENT_ID = -1;
-    
-    //private int noteId = NOTE_NOT_EXISTENT_ID;  // would be 0 if not initialized like this (which could overwrite note with ID=0 if something goes wrong)
 
     @Inject NoteManager m_NoteManager;
     private Note note;
-
-    private Toolbar mToolbar;
+    
     private View baseView;
     private LinearLayout noteViewLayout;
     private WebView noteWebView;
@@ -136,8 +127,7 @@ public class EditNoteActivity extends AppCompatActivity {
      */
     private void findViews(){
         //Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
         
         // Base View (whole activity)
         baseView = findViewById(R.id.editNoteActivityBaseView);
@@ -242,13 +232,9 @@ public class EditNoteActivity extends AppCompatActivity {
         noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
 
         //ButtonListener for switching to NoteSettings
-        noteColorButtonEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ColorPickingActivity.class);
-                //todo: intent.putExtra("colorHue", note.getNoteMeta().getColor().hue);
-                startActivityForResult(intent, 1);
-            }
+        noteColorButtonEdit.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), ColorPickingActivity.class);
+            startActivityForResult(intent, 1);
         });
         
         // allow javascript execution for syntax highlighting
@@ -278,14 +264,11 @@ public class EditNoteActivity extends AppCompatActivity {
             });
         }
         
-        bottomSheetPeekView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+        bottomSheetPeekView.setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
     }
@@ -298,70 +281,44 @@ public class EditNoteActivity extends AppCompatActivity {
         BottomSheetLayoutCreator b = new BottomSheetLayoutCreator(
                 getResources(),
                 getLayoutInflater(),
-                (ViewGroup) findViewById(R.id.bottom_sheet_root)
+                findViewById(R.id.bottom_sheet_root)
         );
     
-        // Markdown
-        
+        buildBottomSheetMarkdown(b);
+        buildBottomSheetLaTeX(b);
+        buildBottomSheetCodeSnippetsJava(b);
+    }
+    
+    private void buildBottomSheetMarkdown(BottomSheetLayoutCreator b) {
         b.beginCategory("Markdown");
-        b.addButton(R.drawable.icon_format_bold, null, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "**", "**");
-            }
+        b.addButton(R.drawable.icon_format_bold, null, view -> surroundWithElements(noteEditText, "**", "**"));
+        b.addButton(R.drawable.icon_format_italic, null, view -> surroundWithElements(noteEditText, "*", "*"));
+        b.addButton(R.drawable.icon_format_bullet_list, "List", view -> surroundWithElements(noteEditText, "* ", ""));
+        b.addButton(R.drawable.icon_format_headline, "Headline", view -> surroundWithElements(noteEditText, "# ", ""));
+        b.addButton(R.drawable.icon_format_link_website, "Link", view -> surroundWithElements(noteEditText, "[", "](www.example.com)"));
+        b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
+        b.addButton(R.drawable.icon_format_code, "Code", view -> surroundWithElements(noteEditText, "```lang-", "\n```"));
+        b.addButton(R.drawable.icon_format_link_note, "Note", view -> {
+            //todo: implement inserting note dialogue
+            Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
         });
-        b.addButton(R.drawable.icon_format_italic, null, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "*", "*");
-            }
-        });
-        b.addButton(R.drawable.icon_format_bullet_list, "List", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "* ", "");
-            }
-        });
-        b.addButton(R.drawable.icon_format_headline, "Headline", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "# ", "");
-            }
-        });
-        b.addButton(R.drawable.icon_format_link_website, "Link", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "[", "](www.example.com)");
-            }
-        });
-        b.addButton(R.drawable.icon_format_quote, "Quote", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "> ", "");
-            }
-        });
-        b.addButton(R.drawable.icon_format_code, "Code", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "```lang-", "\n```");
-            }
-        });
-        b.addButton(R.drawable.icon_format_link_note, "Note", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //todo: implement inserting note dialogue
-                Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
-            }
-        });
-        
-        // LaTeX (only as design demonstration)
-        
+    }
+    
+    /**
+     * only as design demonstration
+     * @param b
+     */
+    private void buildBottomSheetLaTeX(BottomSheetLayoutCreator b) {
         b.beginCategory("LaTeX");
         b.addButton(R.drawable.icon_format_code, "Formula", null);
         b.addButton(R.drawable.icon_format_link_website, "Math Stuff", null);
-        
-        // Code Snippets: Java (only as design demonstration)
-        
+    }
+    
+    /**
+     * only as design demonstration
+     * @param b
+     */
+    private void buildBottomSheetCodeSnippetsJava(BottomSheetLayoutCreator b) {
         b.beginCategory("Code Snippets: Java");
         b.addButton(R.drawable.icon_format_code, "for i", null);
         b.addButton(R.drawable.icon_format_code, "try, catch, finally", null);
@@ -726,12 +683,12 @@ public class EditNoteActivity extends AppCompatActivity {
             
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             
+        } else if (noteEditLayout.getVisibility() == View.VISIBLE) {
+            
+            finishEditing();
+            
         } else {
-            if (noteEditLayout.getVisibility() == View.VISIBLE) {
-                finishEditing();
-            } else {
-                super.onBackPressed();
-            }
+            super.onBackPressed();
         }
     }
     
@@ -762,20 +719,4 @@ public class EditNoteActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit_note, menu);
         return true;
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-
-        if (id == R.id.action_settings2) {
-            //Open ColorPickingActivity
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 }
