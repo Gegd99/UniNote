@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -60,8 +61,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
     private ImageButton noteColorButtonEdit;
-    private View noteHeaderEditMode;
-    private View noteHeaderViewMode;
+    private ViewGroup noteHeaderEditMode;
+    private ViewGroup noteHeaderViewMode;
     private BottomSheetBehavior bottomSheetBehavior;
     private View bottomSheetPeekView;
     
@@ -78,11 +79,16 @@ public class EditNoteActivity extends AppCompatActivity {
     private float requestedFontSize = currentFontSize;
     private int minRequestableFontSize = 8;
     private int maxRequestableFontSize = 64;
+    
+    // utility
+    private AndroidUtility utils = new AndroidUtility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
+        
+        utils.makeTransparentStatusBar(this);
     
         cssStyleSource = getString(R.string.note_webview_css);
         syntaxHighlightingJavascriptSource = readRawTextFile(R.raw.prism_js);
@@ -178,6 +184,14 @@ public class EditNoteActivity extends AppCompatActivity {
             
             // detect double tap
             private GestureDetector gestureDetector = new GestureDetector(EditNoteActivity.this, new GestureDetector.SimpleOnGestureListener() {
+                
+                // this method only triggers when too much time passed for a double tap to happen
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    Toast.makeText(EditNoteActivity.this, R.string.double_tap_to_edit, Toast.LENGTH_SHORT).show();
+                    return super.onSingleTapConfirmed(e);
+                }
+    
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
 
@@ -564,11 +578,9 @@ public class EditNoteActivity extends AppCompatActivity {
         int androidColor = android.graphics.Color.rgb(color.red, color.green, color.blue);
         
         // change layout in edit mode and in preview mode
-        noteColorButtonEdit.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         noteHeaderEditMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         noteHeaderViewMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         // force android to render changes
-        noteColorButtonEdit.invalidate();
         noteHeaderViewMode.invalidate();
         noteHeaderEditMode.invalidate();
     }

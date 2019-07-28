@@ -95,7 +95,7 @@ public class NoteManager {
     public Note createNote() {
         NoteMeta meta = new NoteMeta(
                 getLowestAvailableId(),
-                "unnamed",
+                "",
                 Color.UNKNOWN,
                 System.currentTimeMillis(),
                 System.currentTimeMillis()
