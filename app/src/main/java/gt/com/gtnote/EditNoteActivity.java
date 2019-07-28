@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -13,10 +15,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -33,11 +36,11 @@ import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
-import gt.com.gtnote.Models.TextEditOperations;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SubModels.Color;
+import gt.com.gtnote.Models.TextEditOperations;
 import gt.com.gtnote.dagger.NoteManagerComponent;
 
 import static gt.com.gtnote.statics.Constants.COLOR_PICK_INTENT_KEY;
@@ -68,14 +71,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private ImageButton noteColorButtonEdit;
     private View noteHeaderEditMode;
     private View noteHeaderViewMode;
-    private Button markdownButtonBold;
-    private Button markdownButtonItalique;
-    private Button markdownButtonLink;
-    private Button markdownButtonLinkNote;
-    private Button markdownButtonBulletList;
-    private Button markdownButtonHeadline;
-    private Button markdownButtonQuote;
-    private Button markdownButtonCode;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private View bottomSheetPeekView;
     
     private TextEditOperations textEditOperations = new TextEditOperations();
     
@@ -102,6 +99,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
         findViews();
         attachListeners();
+        buildBottomSheet();
         initNoteManager();
     
         Bundle extras = getIntent().getExtras();
@@ -163,15 +161,21 @@ public class EditNoteActivity extends AppCompatActivity {
         noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
         noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
         
-        // Markdown Menu
-        markdownButtonBold = findViewById(R.id.editNoteMarkdownButtonBold);
-        markdownButtonItalique = findViewById(R.id.editNoteMarkdownButtonItalique);
-        markdownButtonLink = findViewById(R.id.editNoteMarkdownButtonLink);
-        markdownButtonLinkNote = findViewById(R.id.editNoteMarkdownButtonLinkNote);
-        markdownButtonBulletList = findViewById(R.id.editNoteMarkdownButtonBulletList);
-        markdownButtonHeadline = findViewById(R.id.editNoteMarkdownButtonHeadline);
-        markdownButtonQuote = findViewById(R.id.editNoteMarkdownButtonQuote);
-        markdownButtonCode = findViewById(R.id.editNoteMarkdownButtonCode);
+        View bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setHideable(false);
+    
+        bottomSheetPeekView = findViewById(R.id.bottom_sheet_peek_view);
+        
+        // wait for views to inflate, then query height
+        bottomSheetPeekView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                bottomSheetBehavior.setPeekHeight(bottomSheetPeekView.getMeasuredHeight());
+                
+                bottomSheetPeekView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     /**
@@ -274,28 +278,75 @@ public class EditNoteActivity extends AppCompatActivity {
             });
         }
         
-        markdownButtonBold.setOnClickListener(new View.OnClickListener() {
+        bottomSheetPeekView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                } else {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+    }
+    
+    /**
+     * Dynamically creates all the buttons etc. in bottom sheet
+     */
+    private void buildBottomSheet() {
+        
+        BottomSheetLayoutCreator b = new BottomSheetLayoutCreator(
+                getResources(),
+                getLayoutInflater(),
+                (ViewGroup) findViewById(R.id.bottom_sheet_root)
+        );
+    
+        // Markdown
+        
+        b.beginCategory("Markdown");
+        b.addButton(R.drawable.icon_format_bold, null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 surroundWithElements(noteEditText, "**", "**");
             }
         });
-        
-        markdownButtonItalique.setOnClickListener(new View.OnClickListener() {
+        b.addButton(R.drawable.icon_format_italic, null, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 surroundWithElements(noteEditText, "*", "*");
             }
         });
-        
-        markdownButtonLink.setOnClickListener(new View.OnClickListener() {
+        b.addButton(R.drawable.icon_format_bullet_list, "List", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "* ", "");
+            }
+        });
+        b.addButton(R.drawable.icon_format_headline, "Headline", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "# ", "");
+            }
+        });
+        b.addButton(R.drawable.icon_format_link_website, "Link", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 surroundWithElements(noteEditText, "[", "](www.example.com)");
             }
         });
-        
-        markdownButtonLinkNote.setOnClickListener(new View.OnClickListener() {
+        b.addButton(R.drawable.icon_format_quote, "Quote", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "> ", "");
+            }
+        });
+        b.addButton(R.drawable.icon_format_code, "Code", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                surroundWithElements(noteEditText, "```lang-", "\n```");
+            }
+        });
+        b.addButton(R.drawable.icon_format_link_note, "Note", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //todo: implement inserting note dialogue
@@ -303,33 +354,18 @@ public class EditNoteActivity extends AppCompatActivity {
             }
         });
         
-        markdownButtonBulletList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "* ", "");
-            }
-        });
+        // LaTeX (only as design demonstration)
         
-        markdownButtonHeadline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "# ", "");
-            }
-        });
+        b.beginCategory("LaTeX");
+        b.addButton(R.drawable.icon_format_code, "Formula", null);
+        b.addButton(R.drawable.icon_format_link_website, "Math Stuff", null);
         
-        markdownButtonQuote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "> ", "");
-            }
-        });
+        // Code Snippets: Java (only as design demonstration)
         
-        markdownButtonCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                surroundWithElements(noteEditText, "```lang-", "\n```");
-            }
-        });
+        b.beginCategory("Code Snippets: Java");
+        b.addButton(R.drawable.icon_format_code, "for i", null);
+        b.addButton(R.drawable.icon_format_code, "try, catch, finally", null);
+        b.addButton(R.drawable.icon_format_code, "System.out.println", null);
     }
     
     /**
@@ -590,18 +626,22 @@ public class EditNoteActivity extends AppCompatActivity {
         {
             noteTitleEditText.setText(note.getNoteMeta().getTitle());
             noteEditText.setText(note.getNoteContent().getText());
+            
+            bottomSheetBehavior.setHideable(false);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
         else
         {
             noteTitleTextView.setText(note.getNoteMeta().getTitle());
 
             String htmlString = getHTMLFromMarkdown(note.getNoteContent().getText());
-    
-            Log.d(TAG, "htmlString: "+htmlString);
 
             // baseUrl is necessary in order to catch links in simpler format
             // otherwise, only links like https://www.google.com would be caught, but not www.google.de
             noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
+            
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
 
         setLayoutType(typeID);
@@ -681,10 +721,17 @@ public class EditNoteActivity extends AppCompatActivity {
     
     @Override
     public void onBackPressed() {
-        if (noteEditLayout.getVisibility() == View.VISIBLE) {
-            finishEditing();
+        
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            
         } else {
-            super.onBackPressed();
+            if (noteEditLayout.getVisibility() == View.VISIBLE) {
+                finishEditing();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
     

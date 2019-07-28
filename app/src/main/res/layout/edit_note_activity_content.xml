@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/editNoteActivityBaseView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="@layout/activity_edit_note"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/noteEditLayout"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/noteHeaderEditMode"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#fff"
+                android:gravity="center_vertical"
+                android:elevation="@dimen/note_header_elevation">
+
+                <EditText
+                    android:id="@+id/noteTitleEditText"
+                    android:hint="Title"
+                    android:inputType="textEmailSubject|textCapSentences"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="12dp"
+                    android:paddingLeft="0dp"
+                    android:fontFamily="monospace"
+                    android:textSize="24dp"
+                    />
+
+                <ImageButton
+                    android:id="@+id/noteColorButtonEdit"
+                    app:srcCompat="@drawable/icon_pick_color"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/noteEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textMultiLine|textCapSentences"
+                android:fontFamily="monospace"
+                android:textSize="24dp"
+                android:background="@color/colorNoteBackground"
+                android:layout_margin="0dp"
+                android:padding="12dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="go back to save"
+                android:textAlignment="center"
+                android:layout_marginTop="6dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/noteViewLayout"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/noteHeaderViewMode"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#fff"
+                android:gravity="center_vertical"
+                android:elevation="@dimen/note_header_elevation">
+
+                <TextView
+                    android:id="@+id/noteTitleTextView"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="0dp"
+                    android:paddingLeft="12dp"
+                    android:fontFamily="monospace"
+                    android:textSize="24dp"
+                    android:gravity="center_vertical"
+                    />
+
+                <Space
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
+
+            </LinearLayout>
+
+            <WebView
+                android:id="@+id/noteWebView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="double tap to edit"
+                android:textAlignment="center"
+                android:layout_marginTop="6dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
