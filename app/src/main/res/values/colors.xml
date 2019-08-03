@@ -5,4 +5,15 @@
     <color name="colorAccent">#FD7A53</color>
     <color name="textColor">#000000</color>
     <color name="colorNoteBackground">#FFFFFF</color>
+    <color name="colorTransparent">#00FFFFFF</color>
+
+    <!-- temporary color:
+    - the user should never see this color, it's just a placeholder
+    - should not be transparent since this leads to unexpected behaviour in some cases
+    -->
+    <color name="colorTemporary">#FFFFFF</color>
+
+    <color name="colorShadowStart">#B9B9B9</color>
+    <color name="colorShadowCenter">#E9E9E9</color>
+    <color name="colorShadowEnd">#FFFFFF</color>
 </resources>
