@@ -32,6 +32,8 @@ public class NoteManager {
     private FileIO fileIO;
     private NoteMetaParser metaParser = new NoteMetaParser();
     private LinkedList<Note> notes = new LinkedList<>();
+    
+    private Color defaultNoteColor = Color.YELLOW;
 
     @Inject
     public NoteManager(FileIO fileIO) {
@@ -96,7 +98,7 @@ public class NoteManager {
         NoteMeta meta = new NoteMeta(
                 getLowestAvailableId(),
                 "",
-                Color.UNKNOWN,
+                defaultNoteColor,
                 System.currentTimeMillis(),
                 System.currentTimeMillis()
         );
@@ -250,5 +252,9 @@ public class NoteManager {
     public List<Note> getNotes()
     {
         return notes;
+    }
+    
+    public Color getDefaultNoteColor() {
+        return defaultNoteColor;
     }
 }

@@ -31,4 +31,20 @@ public enum Color
         }
         return UNKNOWN;
     }
+    
+    /**
+     * @return all colors except UNKNOWN
+     */
+    public static Color[] getAllNormal() {
+        Color[] allColors = values();
+        Color[] colors = new Color[allColors.length - 1];
+        int i = 0;
+        for (Color color : allColors) {
+            if (color != UNKNOWN) {
+                colors[i] = color;
+                i++;
+            }
+        }
+        return colors;
+    }
 }
