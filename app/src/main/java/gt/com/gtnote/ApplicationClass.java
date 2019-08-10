@@ -11,8 +11,6 @@ import gt.com.gtnote.dagger.ManagersComponent;
  */
 public class ApplicationClass extends Application
 {
-    private NoteManagerComponent m_NoteManagerComponent;
-    private SettingsManagerComponent m_SettingsManagerComponent;
     private ManagersComponent m_ManagersComponent;
 
     @Override
@@ -23,15 +21,6 @@ public class ApplicationClass extends Application
         m_ManagersComponent = DaggerManagersComponent.builder()
                 .contextModule(new ContextModule(this))
                 .build();
-
-        /*
-        m_NoteManagerComponent = DaggerNoteManagerComponent.builder()
-                .contextModule(new ContextModule(this))
-                .build();
-        m_SettingsManagerComponent = DaggerSettingsManagerComponent.builder()
-                .contextModule(new ContextModule(this))
-                .build();
-                */
     }
 
     public ManagersComponent getManagersComponent()
