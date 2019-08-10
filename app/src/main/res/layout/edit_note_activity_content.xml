@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/editNoteActivityBaseView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="@layout/activity_edit_note"
+    android:background="@color/colorNoteBackground"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/noteEditLayout"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/noteHeaderEditMode"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff">
+
+                <LinearLayout
+                    android:id="@+id/status_bar_space_view_group_edit_mode"
+                    android:orientation="vertical"
+                    android:background="@color/colorTransparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center_vertical">
+
+                    <EditText
+                        android:id="@+id/noteTitleEditText"
+                        android:hint="Title"
+                        android:inputType="textEmailSubject|textCapSentences"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="0dp"
+                        android:paddingLeft="12dp"
+                        android:fontFamily="monospace"
+                        android:textSize="24dp"
+                        android:background="@color/colorTransparent"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/noteColorButtonEdit"
+                        app:srcCompat="@drawable/icon_pick_color"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        style="?android:attr/buttonBarButtonStyle" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/note_header_elevation"
+                android:background="@drawable/custom_shadow" />
+
+            <EditText
+                android:id="@+id/noteEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textMultiLine|textCapSentences"
+                android:fontFamily="monospace"
+                android:textSize="24dp"
+                android:background="@color/colorTransparent"
+                android:layout_margin="0dp"
+                android:padding="12dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/noteViewLayout"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/noteHeaderViewMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/status_bar_space_view_group_view_mode"
+                    android:orientation="vertical"
+                    android:background="@color/colorTransparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/noteTitleTextView"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="0dp"
+                        android:paddingLeft="12dp"
+                        android:fontFamily="monospace"
+                        android:textSize="24dp"
+                        android:textColor="@color/textColor"
+                        android:gravity="center_vertical"
+                        />
+
+                    <Space
+                        android:layout_width="60dp"
+                        android:layout_height="60dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/note_header_elevation"
+                android:background="@drawable/custom_shadow" />
+
+            <WebView
+                android:id="@+id/noteWebView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
