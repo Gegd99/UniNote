@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +21,7 @@ import javax.inject.Inject;
 import gt.com.gtnote.Models.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
 import gt.com.gtnote.Interfaces.OnNoteListener;
+import gt.com.gtnote.Models.Managers;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
@@ -29,8 +29,7 @@ import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
 import gt.com.gtnote.Models.SettingsManager;
 import gt.com.gtnote.Models.SubModels.Color;
-import gt.com.gtnote.dagger.NoteManagerComponent;
-import gt.com.gtnote.dagger.SettingsManagerComponent;
+import gt.com.gtnote.dagger.ManagersComponent;
 
 import static gt.com.gtnote.helper.SortAndFilter.sortAndFilterList;
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
@@ -46,8 +45,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
-    @Inject NoteManager m_NoteManager;
-    @Inject SettingsManager m_SettingsManager;
+    @Inject Managers m_Managers;
+    private NoteManager m_NoteManager;
+    private SettingsManager m_SettingsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,13 +155,12 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
      */
     public void injectManagers()
     {
-        NoteManagerComponent noteManagerComponent = ((ApplicationClass) getApplication()).getNoteManagerComponent();
+        ManagersComponent managersComponent = ((ApplicationClass) getApplication()).getManagersComponent();
 
-        noteManagerComponent.inject(this);
+        managersComponent.inject(this);
 
-        SettingsManagerComponent settingsManagerComponent = ((ApplicationClass) getApplication()).getSettingsManagerComponent();
-
-        settingsManagerComponent.inject(this);
+        m_NoteManager = m_Managers.getNoteManager();
+        m_SettingsManager = m_Managers.getSettingsManager();
     }
 
     private void createNewNote()

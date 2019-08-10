@@ -51,6 +51,7 @@ public class SettingsManager
         //TODO:Implement
 
         //load SortType
+        m_SortType = SortType.LAST_EDIT_TIME;
     }
 
     public SortType getSortType() {
