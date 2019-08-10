@@ -32,6 +32,7 @@ import gt.com.gtnote.Models.SubModels.Color;
 import gt.com.gtnote.dagger.NoteManagerComponent;
 import gt.com.gtnote.dagger.SettingsManagerComponent;
 
+import static gt.com.gtnote.helper.SortAndFilter.sortAndFilterList;
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
 import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
 import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         //Setup RecyclerView
         List<Note> notes = m_NoteManager.getNotes();
+        sortAndFilterList(notes, m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
         mAdapter = new NotesRecyclerViewAdapter(notes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);

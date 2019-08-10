@@ -5,7 +5,9 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,11 +25,15 @@ public class SettingsManager
 
     private FileIO fileIO;
 
-    private SortType sortType;
+    private SortType m_SortType;
+
+    private List<Color> m_FilterColors;
 
     @Inject
     public SettingsManager(FileIO fileIO)
     {
+        m_FilterColors = new ArrayList<>();
+
         this.fileIO = fileIO;
         try {
             loadSettings();
@@ -45,15 +51,24 @@ public class SettingsManager
         //TODO:Implement
 
         //load SortType
-
-        //load other settings
     }
 
     public SortType getSortType() {
-        return sortType;
+        return m_SortType;
     }
 
     private void setSortType(SortType sortType) {
-        this.sortType = sortType;
+        m_SortType = sortType;
+    }
+
+    public List<Color> getFilterColors() {
+        return m_FilterColors;
+    }
+
+    public void addFilterColors(Color color) {
+        m_FilterColors.add(color);
+    }
+    public void removeFilterColors(Color color) {
+        m_FilterColors.remove(color);
     }
 }
