@@ -3,6 +3,7 @@ package gt.com.gtnote;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -63,6 +65,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private ImageButton noteColorButtonEdit;
     private ViewGroup noteHeaderEditMode;
     private ViewGroup noteHeaderViewMode;
+    private View bottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private View bottomSheetPeekView;
     
@@ -79,16 +82,16 @@ public class EditNoteActivity extends AppCompatActivity {
     private float requestedFontSize = currentFontSize;
     private int minRequestableFontSize = 8;
     private int maxRequestableFontSize = 64;
-    
-    // utility
-    private AndroidUtility utils = new AndroidUtility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
-        
-        utils.makeTransparentStatusBar(this);
+    
+        // make it possible to change the status bar color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
     
         cssStyleSource = getString(R.string.note_webview_css);
         syntaxHighlightingJavascriptSource = readRawTextFile(R.raw.prism_js);
@@ -157,7 +160,7 @@ public class EditNoteActivity extends AppCompatActivity {
         noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
         noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
         
-        View bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setHideable(false);
     
@@ -580,9 +583,15 @@ public class EditNoteActivity extends AppCompatActivity {
         // change layout in edit mode and in preview mode
         noteHeaderEditMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         noteHeaderViewMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        bottomSheet.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         // force android to render changes
         noteHeaderViewMode.invalidate();
         noteHeaderEditMode.invalidate();
+        bottomSheet.invalidate();
+    
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(androidColor);
+        }
     }
 
     /**
