@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         injectManagers();
 
-        //TODO: Update mAdapter if anything in NoteManager changes
+        testSettingsManager();
 
         attachListeners();
     }
@@ -80,20 +80,22 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private void attachListeners()
     {
         //ButtonListener for creating a new note
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewNote();
-            }
-        });
+        mFab.setOnClickListener(view -> createNewNote());
 
         //Setup RecyclerView
         List<Note> notes = m_NoteManager.getNotes();
-        sortAndFilterList(notes, m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        notes = sortAndFilterList(notes, m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
         mAdapter = new NotesRecyclerViewAdapter(notes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void testSettingsManager()
+    {
+        m_SettingsManager.addFilterColors(Color.GREEN);
+        m_SettingsManager.addFilterColors(Color.RED);
+        m_SettingsManager.addFilterColors(Color.UNKNOWN);
     }
 
     private String test() throws JSONException {
