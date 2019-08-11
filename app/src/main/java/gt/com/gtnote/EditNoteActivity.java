@@ -65,6 +65,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private ImageButton noteColorButtonEdit;
     private ViewGroup noteHeaderEditMode;
     private ViewGroup noteHeaderViewMode;
+    private View bottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private View bottomSheetPeekView;
     
@@ -159,7 +160,7 @@ public class EditNoteActivity extends AppCompatActivity {
         noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
         noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
         
-        View bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setHideable(false);
     
@@ -582,9 +583,11 @@ public class EditNoteActivity extends AppCompatActivity {
         // change layout in edit mode and in preview mode
         noteHeaderEditMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         noteHeaderViewMode.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
+        bottomSheet.getBackground().setColorFilter(androidColor, PorterDuff.Mode.MULTIPLY);
         // force android to render changes
         noteHeaderViewMode.invalidate();
         noteHeaderEditMode.invalidate();
+        bottomSheet.invalidate();
     
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(androidColor);
