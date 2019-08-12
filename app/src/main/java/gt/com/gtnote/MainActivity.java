@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private List<Note> mFilteredAndSortedNotes;
 
     @Inject Managers m_Managers;
     private NoteManager m_NoteManager;
@@ -83,9 +84,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mFab.setOnClickListener(view -> createNewNote());
 
         //Setup RecyclerView
-        List<Note> notes = m_NoteManager.getNotes();
-        notes = sortAndFilterList(notes, m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
-        mAdapter = new NotesRecyclerViewAdapter(notes, this);
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        mAdapter = new NotesRecyclerViewAdapter(mFilteredAndSortedNotes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -188,7 +188,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     @Override
     public void onResume() {
-        mAdapter.notifyDataSetChanged();
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
+        //mAdapter.notifyDataSetChanged();
         super.onResume();
 
     }
@@ -221,6 +223,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
      */
     @Override
     public void onNoteClick(int position) {
-        openExistingNote(m_NoteManager.getNotes().get(position));
+        openExistingNote(mFilteredAndSortedNotes.get(position));
     }
 }

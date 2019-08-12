@@ -96,6 +96,12 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         }
     }
 
+    public void updateNotes(List<Note> updatedNotes)
+    {
+        mNotes = updatedNotes;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mNotes.size();
