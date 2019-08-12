@@ -44,9 +44,11 @@ public class SortAndFilter
         {
             case CREATION_TIME:
                 Collections.sort(notes, (note1, note2) -> Long.compare(note1.getNoteMeta().getCreationTime(), note2.getNoteMeta().getCreationTime()));
+                Collections.reverse(notes);
                 break;
             case LAST_EDIT_TIME:
                 Collections.sort(notes, (note1, note2) -> Long.compare(note1.getNoteMeta().getLastEditTime(), note2.getNoteMeta().getLastEditTime()));
+                Collections.reverse(notes);
                 break;
             default:
                 break;
