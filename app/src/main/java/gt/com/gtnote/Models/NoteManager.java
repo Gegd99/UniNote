@@ -32,6 +32,7 @@ public class NoteManager {
     private FileIO fileIO;
     private NoteMetaParser metaParser = new NoteMetaParser();
     private LinkedList<Note> notes = new LinkedList<>();
+    private Note mDeletedNote;
 
     @Inject
     public NoteManager(FileIO fileIO) {
@@ -178,6 +179,7 @@ public class NoteManager {
                     Log.d(TAG, String.format("Deleting meta: '''%s'''", allMetas.get(i)));
                     allMetas.remove(i);
                     notes.remove(note);
+                    mDeletedNote = note;
                     break;
                 }
             }
@@ -197,6 +199,16 @@ public class NoteManager {
     private void emptyContent(NoteMeta meta) {
         String contentFilePath = filePathFromNoteId(meta.getNoteId());
         fileIO.write(contentFilePath, "");
+    }
+
+    public void undoDelete()
+    {
+        try{
+            save(mDeletedNote);
+        }
+        catch (JSONException ex) {
+            Log.w(TAG, ex.getMessage());
+        }
     }
     
     /**

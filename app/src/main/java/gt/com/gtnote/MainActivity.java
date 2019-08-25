@@ -223,7 +223,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     @Override
     public void onNoteSwipe(int position) {
         m_NoteManager.delete(m_NoteManager.getNotes().get(position));
+        mAdapter.notifyDataSetChanged();
         Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Hallo", Snackbar.LENGTH_LONG);
+        snackbar.setAction("UNDO", v -> m_NoteManager.undoDelete());
         snackbar.show();
     }
 }
