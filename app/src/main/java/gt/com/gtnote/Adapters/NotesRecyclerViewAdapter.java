@@ -101,4 +101,9 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     public int getItemCount() {
         return mNotes.size();
     }
+
+    public void deleteNote(int position)
+    {
+        mOnNoteListener.onNoteSwipe(position);
+    }
 }
