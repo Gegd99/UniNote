@@ -205,6 +205,7 @@ public class NoteManager {
     {
         try{
             save(mDeletedNote);
+            notes.add(mDeletedNote);
         }
         catch (JSONException ex) {
             Log.w(TAG, ex.getMessage());
