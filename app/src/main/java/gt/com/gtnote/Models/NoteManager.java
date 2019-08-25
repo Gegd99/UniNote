@@ -152,6 +152,47 @@ public class NoteManager {
         }
         return null;
     }
+
+    /**
+     * Deletes the meta and empties the content of the given note.
+     * @param note Note supposed to be deleted
+     */
+    public void delete(Note note){
+        deleteMeta(note.getNoteMeta());
+        emptyContent(note.getNoteMeta());
+    }
+
+    private void deleteMeta(NoteMeta meta) {
+
+        try{
+            String allMetasString = fileIO.read(META_FILE_NAME);
+            JSONArray allMetas = new JSONArray(allMetasString);
+            JSONObject metaAsJSONObject = metaParser.dumpMeta(meta);
+
+            for (int i=0; i < allMetas.length(); i++) {
+
+                if(allMetas.get(i).equals(metaAsJSONObject)) {
+                    allMetas.remove(i);
+                    break;
+                }
+            }
+
+            allMetasString = allMetas.toString();
+
+            Log.d(TAG, String.format("saveMetas after deleting: '''%s'''", allMetasString));
+
+            fileIO.write(META_FILE_NAME, allMetasString);
+
+        }
+        catch (JSONException ex) {
+            Log.w(TAG, ex.getMessage());
+        }
+    }
+
+    private void emptyContent(NoteMeta meta) {
+        String contentFilePath = filePathFromNoteId(meta.getNoteId());
+        fileIO.write(contentFilePath, "");
+    }
     
     /**
      * creates or updates respective files
@@ -171,6 +212,7 @@ public class NoteManager {
     private void saveMeta(NoteMeta meta) throws JSONException {
         // TODO: takes linear time -> make mapping for const. time?
 
+        //TODO Question: Why don't you use notes.size()?
         int length = 0;
         for (Note note: notes) {
             length++;
