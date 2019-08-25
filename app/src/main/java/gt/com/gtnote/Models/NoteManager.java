@@ -51,6 +51,8 @@ public class NoteManager {
      */
     private void loadAll() throws JSONException {
 
+        //fileIO.delete(META_FILE_NAME);
+
         if (!fileIO.fileExists(META_FILE_NAME)) {
             createMetaFile();
         }
@@ -158,21 +160,24 @@ public class NoteManager {
      * @param note Note supposed to be deleted
      */
     public void delete(Note note){
-        deleteMeta(note.getNoteMeta());
+        deleteMeta(note);
         emptyContent(note.getNoteMeta());
     }
 
-    private void deleteMeta(NoteMeta meta) {
+    private void deleteMeta(Note note) {
+        NoteMeta meta = note.getNoteMeta();
 
         try{
             String allMetasString = fileIO.read(META_FILE_NAME);
             JSONArray allMetas = new JSONArray(allMetasString);
-            JSONObject metaAsJSONObject = metaParser.dumpMeta(meta);
 
             for (int i=0; i < allMetas.length(); i++) {
+                NoteMeta otherMeta = metaParser.loadMeta(allMetas.getJSONObject(i));
 
-                if(allMetas.get(i).equals(metaAsJSONObject)) {
+                if(otherMeta.getNoteId() == meta.getNoteId()) {
+                    Log.d(TAG, String.format("Deleting meta: '''%s'''", allMetas.get(i)));
                     allMetas.remove(i);
+                    notes.remove(note);
                     break;
                 }
             }
