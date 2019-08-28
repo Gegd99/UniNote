@@ -63,6 +63,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
     private Spinner colorSpinner;
+    private Spinner colorSpinnerPreview;
     private ViewGroup noteHeaderEditMode;
     private ViewGroup noteHeaderViewMode;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -157,6 +158,7 @@ public class EditNoteActivity extends AppCompatActivity {
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
         
         colorSpinner = findViewById(R.id.noteEditColorSpinner);
+        colorSpinnerPreview = findViewById(R.id.noteEditColorSpinnerPreview);
     
         noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
         noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
@@ -248,9 +250,9 @@ public class EditNoteActivity extends AppCompatActivity {
     
         baseView.setOnTouchListener(doubleTabEditListener);
         noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
-
-        colorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            
+    
+        AdapterView.OnItemSelectedListener colorSpinnerListener = new AdapterView.OnItemSelectedListener() {
+    
             private int selectionCount = 0;
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -258,12 +260,18 @@ public class EditNoteActivity extends AppCompatActivity {
                     Color color = (Color) adapterView.getItemAtPosition(i);
                     note.getNoteMeta().setColor(color);
                     onNoteColorChanged();
+                    
+                    // only necessary for respective other colorSpinner (but conveniently just set both):
+                    colorSpinner.setSelection(i, false);
+                    colorSpinnerPreview.setSelection(i, false);
                 }
             }
     
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
+        };
+        colorSpinner.setOnItemSelectedListener(colorSpinnerListener);
+        colorSpinnerPreview.setOnItemSelectedListener(colorSpinnerListener);
         
         // allow javascript execution for syntax highlighting
         noteWebView.getSettings().setJavaScriptEnabled(true);
@@ -306,6 +314,7 @@ public class EditNoteActivity extends AppCompatActivity {
         ColorSpinnerAdapter adapter = new ColorSpinnerAdapter(this, colors);
         
         colorSpinner.setAdapter(adapter);
+        colorSpinnerPreview.setAdapter(adapter);
     
         int position = adapter.getPosition(note.getNoteMeta().getColor());
         if (position == -1) {
@@ -315,6 +324,7 @@ public class EditNoteActivity extends AppCompatActivity {
             Toast.makeText(this, "set to default color", Toast.LENGTH_SHORT).show();
         }
         colorSpinner.setSelection(position, false);
+        colorSpinnerPreview.setSelection(position, false);
     }
     
     /**
