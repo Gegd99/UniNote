@@ -2,11 +2,14 @@ package gt.com.gtnote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -18,6 +21,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import gt.com.gtnote.Adapters.SwipeToDeleteCallback;
 import gt.com.gtnote.Models.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
 import gt.com.gtnote.Interfaces.OnNoteListener;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private static final String TAG = "GTNOTE";
 
+    private CoordinatorLayout mCoordinatorLayout;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
@@ -69,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
      */
     private void findViews()
     {
+        //Layout
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -89,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((NotesRecyclerViewAdapter)mAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void testSettingsManager()
@@ -224,5 +233,20 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     @Override
     public void onNoteClick(int position) {
         openExistingNote(mFilteredAndSortedNotes.get(position));
+    }
+
+    @Override
+    public void onNoteSwipe(int position) {
+        m_NoteManager.delete(m_NoteManager.getNotes().get(position));
+        mAdapter.notifyDataSetChanged();
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Deleted note", Snackbar.LENGTH_LONG);
+        snackbar.setAction("UNDO", v -> undoDelete());
+        snackbar.show();
+    }
+
+    private void undoDelete()
+    {
+        m_NoteManager.undoDelete();
+        mAdapter.notifyDataSetChanged();
     }
 }
