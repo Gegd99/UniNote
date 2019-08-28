@@ -98,6 +98,13 @@ public class TextEditOperations {
         }
         return text.length() - 1;
     }
+
+    public String cutToRandomLength(String text)
+    {
+        int minLength = (int)(Math.random() * 70) + 50;
+
+        return cutToReasonableLength(text, minLength, minLength + 20, 10);
+    }
     
     /**
      * Cuts the string at a reasonable position.

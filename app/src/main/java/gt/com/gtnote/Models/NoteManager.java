@@ -39,7 +39,7 @@ public class NoteManager {
         try {
             loadAll();
         } catch (JSONException e) {
-            Log.e(TAG, String.format("An error occured while loading the notes."));
+            Log.e(TAG, String.format("An error occurred while loading the notes."));
             e.printStackTrace();
         }
         NoteManager.instance = this;  //TODO: remove this ugly line of code
@@ -95,6 +95,7 @@ public class NoteManager {
     public Note createNote() {
         NoteMeta meta = new NoteMeta(
                 getLowestAvailableId(),
+                "",
                 "",
                 Color.UNKNOWN,
                 System.currentTimeMillis(),
@@ -193,12 +194,20 @@ public class NoteManager {
         boolean metaFound = false;
 
         for (int i = 0; i < allMetas.length(); i++) {
-            JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
-            NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
-        
-            if (otherMeta.getNoteId() == meta.getNoteId()) {
-                allMetas.put(i, metaJSONObject);
-                metaFound = true;
+            try
+            {
+                JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
+                NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
+
+                if (otherMeta.getNoteId() == meta.getNoteId()) {
+                    allMetas.put(i, metaJSONObject);
+                    metaFound = true;
+                    break;
+                }
+            }
+            catch (JSONException e)
+            {
+                Log.d(TAG, "A NoteMeta object is missing an entry: ", e);
                 break;
             }
         }
