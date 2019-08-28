@@ -2,12 +2,14 @@ package gt.com.gtnote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -19,17 +21,21 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import gt.com.gtnote.Adapters.SwipeToDeleteCallback;
 import gt.com.gtnote.Models.AndroidFileIO;
 import gt.com.gtnote.Adapters.NotesRecyclerViewAdapter;
 import gt.com.gtnote.Interfaces.OnNoteListener;
+import gt.com.gtnote.Models.Managers;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Interfaces.NoteContent;
 import gt.com.gtnote.Models.NoteManager;
 
 import gt.com.gtnote.Models.NoteMeta;
+import gt.com.gtnote.Models.SettingsManager;
 import gt.com.gtnote.Models.SubModels.Color;
-import gt.com.gtnote.dagger.NoteManagerComponent;
+import gt.com.gtnote.dagger.ManagersComponent;
 
+import static gt.com.gtnote.helper.SortAndFilter.sortAndFilterList;
 import static gt.com.gtnote.statics.Constants.EDIT_NOTE_TYPE_ID;
 import static gt.com.gtnote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
 import static gt.com.gtnote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
@@ -38,12 +44,16 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private static final String TAG = "GTNOTE";
 
+    private CoordinatorLayout mCoordinatorLayout;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+    private List<Note> mFilteredAndSortedNotes;
 
-    @Inject NoteManager m_NoteManager;
+    @Inject Managers m_Managers;
+    private NoteManager m_NoteManager;
+    private SettingsManager m_SettingsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         findViews();
 
-        initNoteManager();
+        injectManagers();
 
-        //TODO: Update mAdapter if anything in NoteManager changes
+        testSettingsManager();
 
         attachListeners();
     }
@@ -64,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
      */
     private void findViews()
     {
+        //Layout
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -76,19 +88,23 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private void attachListeners()
     {
         //ButtonListener for creating a new note
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewNote();
-            }
-        });
+        mFab.setOnClickListener(view -> createNewNote());
 
         //Setup RecyclerView
-        List<Note> notes = m_NoteManager.getNotes();
-        mAdapter = new NotesRecyclerViewAdapter(notes, this);
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        mAdapter = new NotesRecyclerViewAdapter(mFilteredAndSortedNotes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((NotesRecyclerViewAdapter)mAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void testSettingsManager()
+    {
+        m_SettingsManager.addFilterColors(Color.GREEN);
+        m_SettingsManager.addFilterColors(Color.RED);
+        m_SettingsManager.addFilterColors(Color.UNKNOWN);
     }
 
     private String test() throws JSONException {
@@ -145,11 +161,17 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
-    public void initNoteManager()
+    /**
+     * Injects NoteManager and SettingsManager.
+     */
+    public void injectManagers()
     {
-        NoteManagerComponent noteManagerComponent = ((ApplicationClass) getApplication()).getNoteManagerComponent();
+        ManagersComponent managersComponent = ((ApplicationClass) getApplication()).getManagersComponent();
 
-        noteManagerComponent.inject(this);
+        managersComponent.inject(this);
+
+        m_NoteManager = m_Managers.getNoteManager();
+        m_SettingsManager = m_Managers.getSettingsManager();
     }
 
     private void createNewNote()
@@ -175,7 +197,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     @Override
     public void onResume() {
-        mAdapter.notifyDataSetChanged();
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
+        //mAdapter.notifyDataSetChanged();
         super.onResume();
 
     }
@@ -208,6 +232,21 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
      */
     @Override
     public void onNoteClick(int position) {
-        openExistingNote(m_NoteManager.getNotes().get(position));
+        openExistingNote(mFilteredAndSortedNotes.get(position));
+    }
+
+    @Override
+    public void onNoteSwipe(int position) {
+        m_NoteManager.delete(m_NoteManager.getNotes().get(position));
+        mAdapter.notifyDataSetChanged();
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Deleted note", Snackbar.LENGTH_LONG);
+        snackbar.setAction("UNDO", v -> undoDelete());
+        snackbar.show();
+    }
+
+    private void undoDelete()
+    {
+        m_NoteManager.undoDelete();
+        mAdapter.notifyDataSetChanged();
     }
 }

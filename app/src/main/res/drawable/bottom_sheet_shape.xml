@@ -9,7 +9,7 @@
         android:bottomLeftRadius="0dp"
         android:bottomRightRadius="0dp"/>
 
-    <solid android:color="@color/colorPrimaryDark"/>
+    <solid android:color="#fff"/>
 
 
 </shape>

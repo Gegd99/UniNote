@@ -32,6 +32,7 @@ public class NoteManager {
     private FileIO fileIO;
     private NoteMetaParser metaParser = new NoteMetaParser();
     private LinkedList<Note> notes = new LinkedList<>();
+    private Note mDeletedNote;
     
     private Color defaultNoteColor = Color.YELLOW;
 
@@ -41,7 +42,7 @@ public class NoteManager {
         try {
             loadAll();
         } catch (JSONException e) {
-            Log.e(TAG, String.format("An error occured while loading the notes."));
+            Log.e(TAG, String.format("An error occurred while loading the notes."));
             e.printStackTrace();
         }
         NoteManager.instance = this;  //TODO: remove this ugly line of code
@@ -52,6 +53,8 @@ public class NoteManager {
      * and stores them internally as Note objects.
      */
     private void loadAll() throws JSONException {
+
+        //fileIO.delete(META_FILE_NAME);
 
         if (!fileIO.fileExists(META_FILE_NAME)) {
             createMetaFile();
@@ -154,6 +157,62 @@ public class NoteManager {
         }
         return null;
     }
+
+    /**
+     * Deletes the meta and empties the content of the given note.
+     * @param note Note supposed to be deleted
+     */
+    public void delete(Note note){
+        deleteMeta(note);
+        emptyContent(note.getNoteMeta());
+    }
+
+    private void deleteMeta(Note note) {
+        NoteMeta meta = note.getNoteMeta();
+
+        try{
+            String allMetasString = fileIO.read(META_FILE_NAME);
+            JSONArray allMetas = new JSONArray(allMetasString);
+
+            for (int i=0; i < allMetas.length(); i++) {
+                NoteMeta otherMeta = metaParser.loadMeta(allMetas.getJSONObject(i));
+
+                if(otherMeta.getNoteId() == meta.getNoteId()) {
+                    Log.d(TAG, String.format("Deleting meta: '''%s'''", allMetas.get(i)));
+                    allMetas.remove(i);
+                    notes.remove(note);
+                    mDeletedNote = note;
+                    break;
+                }
+            }
+
+            allMetasString = allMetas.toString();
+
+            Log.d(TAG, String.format("saveMetas after deleting: '''%s'''", allMetasString));
+
+            fileIO.write(META_FILE_NAME, allMetasString);
+
+        }
+        catch (JSONException ex) {
+            Log.w(TAG, ex.getMessage());
+        }
+    }
+
+    private void emptyContent(NoteMeta meta) {
+        String contentFilePath = filePathFromNoteId(meta.getNoteId());
+        fileIO.write(contentFilePath, "");
+    }
+
+    public void undoDelete()
+    {
+        try{
+            save(mDeletedNote);
+            notes.add(mDeletedNote);
+        }
+        catch (JSONException ex) {
+            Log.w(TAG, ex.getMessage());
+        }
+    }
     
     /**
      * creates or updates respective files
@@ -173,6 +232,7 @@ public class NoteManager {
     private void saveMeta(NoteMeta meta) throws JSONException {
         // TODO: takes linear time -> make mapping for const. time?
 
+        //TODO Question: Why don't you use notes.size()?
         int length = 0;
         for (Note note: notes) {
             length++;
@@ -195,12 +255,20 @@ public class NoteManager {
         boolean metaFound = false;
 
         for (int i = 0; i < allMetas.length(); i++) {
-            JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
-            NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
-        
-            if (otherMeta.getNoteId() == meta.getNoteId()) {
-                allMetas.put(i, metaJSONObject);
-                metaFound = true;
+            try
+            {
+                JSONObject otherMetaJSONObject = allMetas.getJSONObject(i);
+                NoteMeta otherMeta = metaParser.loadMeta(otherMetaJSONObject);
+
+                if (otherMeta.getNoteId() == meta.getNoteId()) {
+                    allMetas.put(i, metaJSONObject);
+                    metaFound = true;
+                    break;
+                }
+            }
+            catch (JSONException e)
+            {
+                Log.d(TAG, "A NoteMeta object is missing an entry: ", e);
                 break;
             }
         }

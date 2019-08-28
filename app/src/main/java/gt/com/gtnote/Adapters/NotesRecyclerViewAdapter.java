@@ -80,8 +80,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         NoteContent noteContent = note.getNoteContent();
     
         String title = textEditOperations.cutToReasonableLength(noteMeta.getTitle(), 24, 35, 100);
-        // todo: get preview from meta
-        String descriptionText = textEditOperations.cutToReasonableLength(textEditOperations.getRandomString(5, 20), 50, 70, 10);
+        String descriptionText = noteMeta.getPreviewNoteContent();
         Color backgroundColor = noteMeta.getColor();
         int androidColorBackground = android.graphics.Color.rgb(backgroundColor.red, backgroundColor.green, backgroundColor.blue);
         
@@ -97,8 +96,19 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         }
     }
 
+    public void updateNotes(List<Note> updatedNotes)
+    {
+        mNotes = updatedNotes;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return mNotes.size();
+    }
+
+    public void deleteNote(int position)
+    {
+        mOnNoteListener.onNoteSwipe(position);
     }
 }

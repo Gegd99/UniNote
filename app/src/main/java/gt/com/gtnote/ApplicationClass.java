@@ -3,28 +3,28 @@ package gt.com.gtnote;
 import android.app.Application;
 
 import gt.com.gtnote.dagger.ContextModule;
-import gt.com.gtnote.dagger.DaggerNoteManagerComponent;
-import gt.com.gtnote.dagger.NoteManagerComponent;
+import gt.com.gtnote.dagger.DaggerManagersComponent;
+import gt.com.gtnote.dagger.ManagersComponent;
 
 /**
  * Custom Application class, to instantiate things over the whole lifetime of the app.
  */
 public class ApplicationClass extends Application
 {
-    private NoteManagerComponent m_NoteManagerComponent;
+    private ManagersComponent m_ManagersComponent;
 
     @Override
     public void onCreate()
     {
         super.onCreate();
 
-        m_NoteManagerComponent = DaggerNoteManagerComponent.builder()
+        m_ManagersComponent = DaggerManagersComponent.builder()
                 .contextModule(new ContextModule(this))
                 .build();
     }
 
-    public NoteManagerComponent getNoteManagerComponent()
+    public ManagersComponent getManagersComponent()
     {
-        return m_NoteManagerComponent;
+        return m_ManagersComponent;
     }
 }
