@@ -101,6 +101,7 @@ public class NoteManager {
         NoteMeta meta = new NoteMeta(
                 getLowestAvailableId(),
                 "",
+                "",
                 defaultNoteColor,
                 System.currentTimeMillis(),
                 System.currentTimeMillis()
