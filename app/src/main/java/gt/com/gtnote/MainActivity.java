@@ -105,6 +105,12 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         m_SettingsManager.addFilterColors(Color.UNKNOWN);
     }
 
+    private void updateFilteredAndSortedNotes()
+    {
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
+    }
+
     private String test() throws JSONException {
 
         String titleString = "Hello World";
@@ -195,8 +201,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     @Override
     public void onResume() {
-        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
-        ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
+        updateFilteredAndSortedNotes();
         //mAdapter.notifyDataSetChanged();
         super.onResume();
 
@@ -235,8 +240,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     @Override
     public void onNoteSwipe(int position) {
-        m_NoteManager.delete(m_NoteManager.getNotes().get(position));
-        mAdapter.notifyDataSetChanged();
+        m_NoteManager.delete(mFilteredAndSortedNotes.get(position));
+        updateFilteredAndSortedNotes();
         Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Deleted note", Snackbar.LENGTH_LONG);
         snackbar.setAction("UNDO", v -> undoDelete());
         snackbar.show();
@@ -245,6 +250,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private void undoDelete()
     {
         m_NoteManager.undoDelete();
-        mAdapter.notifyDataSetChanged();
+        updateFilteredAndSortedNotes();
     }
 }
