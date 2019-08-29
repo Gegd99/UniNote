@@ -687,8 +687,6 @@ public class EditNoteActivity extends AppCompatActivity {
                     + (syntaxHighlightingRequired ? "<script>" + syntaxHighlightingJavascriptSource + "</script>" : "")
                     + "</body>"
                     + "</html>";
-    
-            Log.d(TAG, "getHTMLFromMarkdown: "+fullHtml);
             
             return fullHtml;
             
