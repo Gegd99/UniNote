@@ -19,9 +19,10 @@ import android.view.WindowManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import java.io.InputStreamReader;
 import javax.inject.Inject;
 
 import gt.com.gtnote.Models.Managers;
+import gt.com.gtnote.Adapters.ColorSpinnerAdapter;
 import gt.com.gtnote.Models.Note;
 import gt.com.gtnote.Models.NoteManager;
 import gt.com.gtnote.Models.NoteMeta;
@@ -64,7 +66,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private EditText noteEditText;
     private EditText noteTitleEditText;
     private TextView noteTitleTextView;
-    private ImageButton noteColorButtonEdit;
+    private Spinner colorSpinner;
+    private Spinner colorSpinnerPreview;
     private ViewGroup noteHeaderEditMode;
     private ViewGroup noteHeaderViewMode;
     private View bottomSheet;
@@ -100,7 +103,6 @@ public class EditNoteActivity extends AppCompatActivity {
         syntaxHighlightingCssSource = readRawTextFile(R.raw.prism_css);
 
         findViews();
-        attachListeners();
         buildBottomSheet();
         initNoteManager();
     
@@ -129,6 +131,9 @@ public class EditNoteActivity extends AppCompatActivity {
             Log.w(TAG, "opened EditNoteActivity without any extras");
             setTitle("Note");
         }
+    
+        attachListeners();
+        initColorSpinner();
         
         onNoteColorChanged();
     }
@@ -156,8 +161,9 @@ public class EditNoteActivity extends AppCompatActivity {
         //EditTexts
         noteEditText = findViewById(R.id.noteEditText);
         noteTitleEditText = findViewById(R.id.noteTitleEditText);
-        //Button
-        noteColorButtonEdit = findViewById(R.id.noteColorButtonEdit);
+        
+        colorSpinner = findViewById(R.id.noteEditColorSpinner);
+        colorSpinnerPreview = findViewById(R.id.noteEditColorSpinnerPreview);
     
         noteHeaderEditMode = findViewById(R.id.noteHeaderEditMode);
         noteHeaderViewMode = findViewById(R.id.noteHeaderViewMode);
@@ -249,12 +255,28 @@ public class EditNoteActivity extends AppCompatActivity {
     
         baseView.setOnTouchListener(doubleTabEditListener);
         noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
-
-        //ButtonListener for switching to NoteSettings
-        noteColorButtonEdit.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), ColorPickingActivity.class);
-            startActivityForResult(intent, 1);
-        });
+    
+        AdapterView.OnItemSelectedListener colorSpinnerListener = new AdapterView.OnItemSelectedListener() {
+    
+            private int selectionCount = 0;
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (selectionCount++ > 0) {  // avoid trigger during initialization
+                    Color color = (Color) adapterView.getItemAtPosition(i);
+                    note.getNoteMeta().setColor(color);
+                    onNoteColorChanged();
+                    
+                    // only necessary for respective other colorSpinner (but conveniently just set both):
+                    colorSpinner.setSelection(i, false);
+                    colorSpinnerPreview.setSelection(i, false);
+                }
+            }
+    
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        };
+        colorSpinner.setOnItemSelectedListener(colorSpinnerListener);
+        colorSpinnerPreview.setOnItemSelectedListener(colorSpinnerListener);
         
         // allow javascript execution for syntax highlighting
         noteWebView.getSettings().setJavaScriptEnabled(true);
@@ -290,6 +312,24 @@ public class EditNoteActivity extends AppCompatActivity {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+    }
+    
+    private void initColorSpinner() {
+        Color[] colors = Color.getAllNormal();
+        ColorSpinnerAdapter adapter = new ColorSpinnerAdapter(this, colors);
+        
+        colorSpinner.setAdapter(adapter);
+        colorSpinnerPreview.setAdapter(adapter);
+    
+        int position = adapter.getPosition(note.getNoteMeta().getColor());
+        if (position == -1) {
+            // should actually never happen,
+            // but will happen during dev since we earlier used UNKNOWN as default value
+            note.getNoteMeta().setColor(m_NoteManager.getDefaultNoteColor());
+            Toast.makeText(this, "set to default color", Toast.LENGTH_SHORT).show();
+        }
+        colorSpinner.setSelection(position, false);
+        colorSpinnerPreview.setSelection(position, false);
     }
     
     /**

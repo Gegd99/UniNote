@@ -43,12 +43,13 @@
                     android:background="@color/colorTransparent"
                     />
 
-                <ImageButton
-                    android:id="@+id/noteColorButtonEdit"
-                    app:srcCompat="@drawable/icon_pick_color"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    style="?android:attr/buttonBarButtonStyle" />
+                <Spinner
+                    android:id="@+id/noteEditColorSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/color_spinner"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp" />
 
             </LinearLayout>
 
@@ -99,9 +100,13 @@
                     android:gravity="center_vertical"
                     />
 
-                <Space
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    <Spinner
+                        android:id="@+id/noteEditColorSpinnerPreview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/color_spinner"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
 
             </LinearLayout>
 
