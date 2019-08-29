@@ -672,10 +672,26 @@ public class EditNoteActivity extends AppCompatActivity {
     private String getHTMLFromMarkdown(String markdownSource) {
         try {
             String htmlString = markdown4jProcessor.process(markdownSource);
-            htmlString = String.format(
-                    "<html><head><style>%s</style><style>%s</style></head><body>%s<script>%s</script><script>%s</script></body></html>",  // build a website with styling
-                    cssStyleSource, syntaxHighlightingCssSource, htmlString, getFontSizeJavascript(), syntaxHighlightingJavascriptSource);
-            return htmlString;
+            
+            boolean syntaxHighlightingRequired = htmlString.contains("</code>");
+    
+            // build html website with CSS and JS
+            String fullHtml = "<html>"
+                    + "<head>"
+                    + "<style>" + cssStyleSource + "</style>"
+                    + (syntaxHighlightingRequired ? "<style>" + syntaxHighlightingCssSource + "</style>" : "")
+                    + "</head>"
+                    + "<body>"
+                    + htmlString
+                    + "<script>" + getFontSizeJavascript() + "</script>"
+                    + (syntaxHighlightingRequired ? "<script>" + syntaxHighlightingJavascriptSource + "</script>" : "")
+                    + "</body>"
+                    + "</html>";
+    
+            Log.d(TAG, "getHTMLFromMarkdown: "+fullHtml);
+            
+            return fullHtml;
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
