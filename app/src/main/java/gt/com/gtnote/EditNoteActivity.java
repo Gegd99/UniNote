@@ -767,7 +767,7 @@ public class EditNoteActivity extends AppCompatActivity {
             NoteMeta meta = note.getNoteMeta();
             meta.setTitle(noteTitleEditText.getText().toString());
             meta.setLastEditTime(System.currentTimeMillis());
-            meta.setPreviewNoteContent(textEditOperations.cutToRandomLength(noteEditText.getText().toString()));
+            meta.setPreviewNoteContent(textEditOperations.cutToRandomLength(noteEditText.getText().toString(), meta.getNoteId()));
 
             //Update NoteContent
             note.getNoteContent().setText(noteEditText.getText().toString());

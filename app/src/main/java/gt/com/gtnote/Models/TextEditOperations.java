@@ -1,9 +1,13 @@
 package gt.com.gtnote.Models;
 
+import java.util.Random;
+
 /**
  * Provides utility for editing Strings in a text which is currently being edited by a user
  */
 public class TextEditOperations {
+    
+    private static Random random = new Random();
     
     /**
      * Inserts a String before and after the selection.
@@ -99,9 +103,10 @@ public class TextEditOperations {
         return text.length() - 1;
     }
 
-    public String cutToRandomLength(String text)
-    {
-        int minLength = (int)(Math.random() * 70) + 50;
+    public String cutToRandomLength(String text, long seed) {
+        
+        random.setSeed(seed);
+        int minLength = random.nextInt(70) + 50;
 
         return cutToReasonableLength(text, minLength, minLength + 20, 10);
     }
