@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         injectManagers();
 
-        testSettingsManager();
-
         attachListeners();
     }
 

@@ -54,8 +54,6 @@ public class NoteManager {
      */
     private void loadAll() throws JSONException {
 
-        //fileIO.delete(META_FILE_NAME);
-
         if (!fileIO.fileExists(META_FILE_NAME)) {
             createMetaFile();
         }
