@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -73,6 +74,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private View bottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private View bottomSheetPeekView;
+    private FloatingActionButton bottomSheetFAB;
     
     private TextEditOperations textEditOperations = new TextEditOperations();
     
@@ -170,7 +172,8 @@ public class EditNoteActivity extends AppCompatActivity {
         
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setHideable(true);
+        bottomSheetBehavior.setSkipCollapsed(true);
     
         bottomSheetPeekView = findViewById(R.id.bottom_sheet_peek_view);
         
@@ -183,6 +186,8 @@ public class EditNoteActivity extends AppCompatActivity {
                 bottomSheetPeekView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+        
+        bottomSheetFAB = findViewById(R.id.bottom_sheet_fab);
     }
 
     /**
@@ -305,11 +310,15 @@ public class EditNoteActivity extends AppCompatActivity {
             });
         }
         
-        bottomSheetPeekView.setOnClickListener(view -> {
+        bottomSheetPeekView.setOnClickListener(
+                view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN)
+        );
+        
+        bottomSheetFAB.setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             }
         });
     }
@@ -340,7 +349,8 @@ public class EditNoteActivity extends AppCompatActivity {
         BottomSheetLayoutCreator b = new BottomSheetLayoutCreator(
                 getResources(),
                 getLayoutInflater(),
-                findViewById(R.id.bottom_sheet_root)
+                findViewById(R.id.bottom_sheet_root),
+                view -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN)
         );
     
         buildBottomSheetMarkdown(b);
@@ -352,7 +362,7 @@ public class EditNoteActivity extends AppCompatActivity {
         b.beginCategory("Markdown");
         b.addButton(R.drawable.icon_format_bold, null, view -> surroundWithElements(noteEditText, "**", "**"));
         b.addButton(R.drawable.icon_format_italic, null, view -> surroundWithElements(noteEditText, "*", "*"));
-        b.addButton(R.drawable.icon_format_bullet_list, "List", view -> surroundWithElements(noteEditText, "* ", ""));
+        b.addButton(R.drawable.icon_format_bullet_list, "List", view -> surroundWithElements(noteEditText, "- ", ""));
         b.addButton(R.drawable.icon_format_headline, "Headline", view -> surroundWithElements(noteEditText, "# ", ""));
         b.addButton(R.drawable.icon_format_link_website, "Link", view -> surroundWithElements(noteEditText, "[", "](www.example.com)"));
         b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
@@ -649,8 +659,8 @@ public class EditNoteActivity extends AppCompatActivity {
             noteTitleEditText.setText(note.getNoteMeta().getTitle());
             noteEditText.setText(note.getNoteContent().getText());
             
-            bottomSheetBehavior.setHideable(false);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomSheetFAB.setVisibility(View.VISIBLE);
         }
         else
         {
@@ -662,8 +672,8 @@ public class EditNoteActivity extends AppCompatActivity {
             // otherwise, only links like https://www.google.com would be caught, but not www.google.de
             noteWebView.loadDataWithBaseURL(baseUrl, htmlString, "text/html", "utf-8", null);
             
-            bottomSheetBehavior.setHideable(true);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomSheetFAB.setVisibility(View.GONE);
         }
 
         setLayoutType(typeID);
@@ -760,7 +770,7 @@ public class EditNoteActivity extends AppCompatActivity {
         
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             
         } else if (noteEditLayout.getVisibility() == View.VISIBLE) {
             

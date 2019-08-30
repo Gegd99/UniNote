@@ -18,13 +18,17 @@ class BottomSheetLayoutCreator {
     private Resources res;
     private LayoutInflater layoutInflater;
     private ViewGroup root;
-    
+    private View.OnClickListener afterOnClickListener;
     private FlexboxLayout currentFlexBox = null;
     
-    BottomSheetLayoutCreator(Resources res, LayoutInflater layoutInflater, ViewGroup root) {
+    /**
+     * @param afterOnClickListener this will be executed after an action has been selected from the menu
+     */
+    BottomSheetLayoutCreator(Resources res, LayoutInflater layoutInflater, ViewGroup root, @Nullable View.OnClickListener afterOnClickListener) {
         this.res = res;
         this.layoutInflater = layoutInflater;
         this.root = root;
+        this.afterOnClickListener = afterOnClickListener;
     }
     
     void beginCategory(String name) {
@@ -56,7 +60,10 @@ class BottomSheetLayoutCreator {
         }
     
         if (onClickListener != null) {
-            button.setOnClickListener(onClickListener);
+            button.setOnClickListener(view1 -> {
+                onClickListener.onClick(view1);
+                afterOnClickListener.onClick(view1);
+            });
         }
         
         currentFlexBox.addView(view);

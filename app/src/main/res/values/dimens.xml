@@ -1,11 +1,11 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="fab_margin_edit_note_activity">16dp</dimen>
+    <dimen name="fab_margin_edit_note_activity">24dp</dimen>
     <dimen name="color_element_radius">5dp</dimen>
     <dimen name="color_element_margin">5dp</dimen>
     <dimen name="color_element_size">100dp</dimen>
     <dimen name="menu_button_min_width">48dp</dimen>
     <dimen name="note_header_elevation">5dp</dimen>
     <dimen name="note_in_list_margin">4dp</dimen>
-    <dimen name="bottom_sheet_max_height">200dp</dimen>
+    <dimen name="bottom_sheet_max_height">300dp</dimen>
 </resources>
