@@ -773,13 +773,18 @@ public class EditNoteActivity extends AppCompatActivity {
             finishEditing();
             
         } else {
+            if(note.getNoteMeta().getTitle().equals("") && note.getNoteContent().getText().equals(""))
+            {
+                m_NoteManager.delete(note);
+                Toast.makeText(this, "Empty note discarded", Toast.LENGTH_SHORT).show();
+            }
             super.onBackPressed();
         }
     }
     
     private void finishEditing() {
         try {
-    
+
             // apply changes
 
 
