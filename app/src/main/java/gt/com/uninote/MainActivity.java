@@ -20,19 +20,19 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import gt.com.uninote.Adapters.SwipeToDeleteCallback;
-import gt.com.uninote.Models.AndroidFileIO;
 import gt.com.uninote.Adapters.NotesRecyclerViewAdapter;
+import gt.com.uninote.Adapters.SwipeToDeleteCallback;
+import gt.com.uninote.Interfaces.NoteContent;
 import gt.com.uninote.Interfaces.OnNoteListener;
+import gt.com.uninote.Models.AndroidFileIO;
 import gt.com.uninote.Models.Managers;
 import gt.com.uninote.Models.Note;
-import gt.com.uninote.Interfaces.NoteContent;
 import gt.com.uninote.Models.NoteManager;
-
 import gt.com.uninote.Models.NoteMeta;
 import gt.com.uninote.Models.SettingsManager;
 import gt.com.uninote.Models.SubModels.Color;
 import gt.com.uninote.dagger.ManagersComponent;
+import gt.com.uninote.helper.ActivityUtils;
 
 import static gt.com.uninote.helper.SortAndFilter.sortAndFilterList;
 import static gt.com.uninote.statics.Constants.EDIT_NOTE_TYPE_ID;
@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         injectManagers();
 
         attachListeners();
+        
+        if (m_NoteManager.isFirstLaunch()) {
+            generateDemoNote();
+        }
     }
 
     /**
@@ -95,6 +99,23 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mRecyclerView.setAdapter(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((NotesRecyclerViewAdapter)mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+    
+    private void generateDemoNote() {
+        Note note = m_NoteManager.createNote();
+        NoteMeta meta = note.getNoteMeta();
+        meta.setColor(Color.GREEN);
+        String text = ActivityUtils.readRawTextFile(R.raw.demo_note, getResources());
+        String title = getResources().getString(R.string.demo_note_title);
+        String preview = getResources().getString(R.string.demo_note_preview);
+        note.getNoteContent().setText(text);
+        meta.setTitle(title);
+        meta.setPreviewNoteContent(preview);
+        try {
+            m_NoteManager.save(note);
+        } catch (JSONException e) {
+            Log.e(TAG, "An error occured while saving the demo file", e);
+        }
     }
 
     private void testSettingsManager()

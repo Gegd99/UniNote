@@ -19,12 +19,6 @@ import gt.com.uninote.Models.SubModels.Color;
 @Singleton
 public class NoteManager {
     
-    //TODO: this ugly singleton is just a temporary solution. EditNoteActivity should access a ViewModel
-    private static NoteManager instance;//TODO: remove
-    public static NoteManager getInstance() {//TODO: remove
-        return instance;
-    }
-    
     private static final String TAG = "GTNOTE";
 
     private static final String META_FILE_NAME = "meta.json";
@@ -35,6 +29,7 @@ public class NoteManager {
     private Note mDeletedNote;
     
     private Color defaultNoteColor = Color.YELLOW;
+    private boolean firstLaunch = false;
 
     @Inject
     public NoteManager(FileIO fileIO) {
@@ -42,10 +37,8 @@ public class NoteManager {
         try {
             loadAll();
         } catch (JSONException e) {
-            Log.e(TAG, String.format("An error occurred while loading the notes."));
-            e.printStackTrace();
+            Log.e(TAG, "An error occurred while loading the notes:", e);
         }
-        NoteManager.instance = this;  //TODO: remove this ugly line of code
     }
     
     /**
@@ -56,6 +49,7 @@ public class NoteManager {
 
         if (!fileIO.fileExists(META_FILE_NAME)) {
             createMetaFile();
+            firstLaunch = true;
         }
 
         String allMetasString = fileIO.read(META_FILE_NAME);  // meta data of all notes is stored in one file (faster reading)
@@ -92,7 +86,6 @@ public class NoteManager {
      * Use this if you want to create a new Note object that does not exist as a file yet.<br>
      * Creates a Note object with a new ID
      * and adds it to the internal list (received with .getAll()) automatically.<br>
-     * The ID is picked by choosing the lowest natural number (incl. 0) available
      * @return a new Note object with empty fields (besides a unique id)
      */
     public Note createNote() {
@@ -233,14 +226,6 @@ public class NoteManager {
      * @throws JSONException
      */
     private void saveMeta(NoteMeta meta) throws JSONException {
-        // TODO: takes linear time -> make mapping for const. time?
-
-        //TODO Question: Why don't you use notes.size()?
-        int length = 0;
-        for (Note note: notes) {
-            length++;
-        }
-        Log.d(TAG, String.format("saveMetas: %d internal note objects", length));
         
         if (!fileIO.fileExists(META_FILE_NAME)) {
             Log.w(TAG, "saveMeta: Meta file was deleted since NoteManager instance was created.");
@@ -327,5 +312,9 @@ public class NoteManager {
     
     public Color getDefaultNoteColor() {
         return defaultNoteColor;
+    }
+    
+    public boolean isFirstLaunch() {
+        return firstLaunch;
     }
 }
