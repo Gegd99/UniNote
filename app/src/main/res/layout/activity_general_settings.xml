@@ -6,24 +6,82 @@
     android:layout_height="match_parent"
     tools:context="gt.com.uninote.GeneralSettingsActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <LinearLayout
         android:orientation="vertical"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <Button
-            android:text="@string/generate_demo_note_button_text"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:textAllCaps="false"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/generate_demo_note_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <android.support.design.widget.AppBarLayout
+            android:layout_weight="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-    </ScrollView>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/settings_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimaryDark"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Sort Type"
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioGroup
+                    android:id="@+id/settings_sort_type_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <RadioButton
+                        android:id="@+id/settings_sort_type_creation_time_radio_button"
+                        android:text="@string/sort_type_creation_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <RadioButton
+                        android:id="@+id/settings_sort_type_edit_time_radio_button"
+                        android:text="@string/sort_type_edit_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RadioGroup>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="24dp" />
+
+                <Button
+                    android:text="@string/generate_demo_note_button_text"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:textAllCaps="false"
+                    android:id="@+id/generate_demo_note_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

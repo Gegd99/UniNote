@@ -37,6 +37,7 @@ import gt.com.uninote.helper.ActivityUtils;
 
 import static gt.com.uninote.helper.SortAndFilter.sortAndFilterList;
 import static gt.com.uninote.statics.Constants.EDIT_NOTE_TYPE_ID;
+import static gt.com.uninote.statics.Constants.GENERAL_PREFERENCES_NAME;
 import static gt.com.uninote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
 import static gt.com.uninote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
 
@@ -61,9 +62,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         setContentView(R.layout.activity_main);
 
         findViews();
-
         injectManagers();
-
+        m_SettingsManager = new SettingsManager(getSharedPreferences(GENERAL_PREFERENCES_NAME, MODE_PRIVATE));
         attachListeners();
         
         if (m_NoteManager.isFirstLaunch()) {
@@ -100,13 +100,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mRecyclerView.setAdapter(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((NotesRecyclerViewAdapter)mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
-    }
-
-    private void testSettingsManager()
-    {
-        m_SettingsManager.addFilterColors(Color.GREEN);
-        m_SettingsManager.addFilterColors(Color.RED);
-        m_SettingsManager.addFilterColors(Color.UNKNOWN);
     }
 
     private void updateFilteredAndSortedNotes()
@@ -179,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         managersComponent.inject(this);
 
         m_NoteManager = m_Managers.getNoteManager();
-        m_SettingsManager = m_Managers.getSettingsManager();
     }
 
     private void createNewNote()

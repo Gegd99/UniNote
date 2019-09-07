@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Uni Note</string>
     <string name="action_settings">Settings</string>
+    <string name="settings_title">Settings</string>
     <string name="double_tap_to_edit">double tap to edit</string>
     <string name="demo_note_title">Demo</string>
     <string name="demo_note_preview">How to Format Your Notes</string>
     <string name="generate_demo_note_button_text">Generate Demo Note</string>
+    <string name="sort_type_creation_time">by Creation Time</string>
+    <string name="sort_type_edit_time">by Last Edit Time</string>
     <string name="note_webview_css">
 
         body {

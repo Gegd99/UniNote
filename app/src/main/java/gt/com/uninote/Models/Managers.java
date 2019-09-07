@@ -7,23 +7,16 @@ import javax.inject.Singleton;
 public class Managers
 {
     private NoteManager m_NoteManager;
-    private SettingsManager m_SettingsManager;
 
     @Inject
-    public Managers(NoteManager noteManager, SettingsManager settingsManager)
+    public Managers(NoteManager noteManager)
     {
         m_NoteManager = noteManager;
-        m_SettingsManager = settingsManager;
     }
 
     public NoteManager getNoteManager()
     {
         return m_NoteManager;
-    }
-
-    public SettingsManager getSettingsManager()
-    {
-        return m_SettingsManager;
     }
 }
 

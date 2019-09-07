@@ -10,8 +10,7 @@ import gt.com.uninote.MainActivity;
 
 @Singleton
 @Component(modules = {ManagersModule.class, AndroidFileIOModule.class, ContextModule.class})
-public interface ManagersComponent
-{
+public interface ManagersComponent {
     void inject(MainActivity mainActivity);
     void inject(EditNoteActivity editNoteActivity);
     void inject(LinkNoteActivity linkNoteActivity);

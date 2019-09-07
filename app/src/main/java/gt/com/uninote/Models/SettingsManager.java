@@ -1,5 +1,6 @@
 package gt.com.uninote.Models;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -14,60 +15,32 @@ import gt.com.uninote.Interfaces.FileIO;
 import gt.com.uninote.Models.SubModels.Color;
 import gt.com.uninote.Models.SubModels.SortType;
 
+import static gt.com.uninote.statics.Constants.PREFERENCE_SORT_TYPE;
+
 @Singleton
 public class SettingsManager
 {
     private static final String TAG = "GTNOTE";
-
-    private static final String META_FILE_NAME = "settings.json";
-
-    private FileIO fileIO;
-
-    private SortType m_SortType;
-
-    private List<Color> m_FilterColors;
-
-    @Inject
-    public SettingsManager(FileIO fileIO)
-    {
-        m_FilterColors = new ArrayList<>();
-
-        this.fileIO = fileIO;
-        try {
-            loadSettings();
-        } catch (JSONException e)
-        {
-            //TODO: If there are no settings they should be created/initialized.
-            Log.e(TAG, String.format("An error occurred while loading the settings."));
-            e.printStackTrace();
-        }
-    }
-
-
-    private void loadSettings() throws JSONException
-    {
-        //TODO:Implement
-
-        //load SortType
-        m_SortType = SortType.LAST_EDIT_TIME;
+    
+    private SharedPreferences sharedPreferences;
+    
+    public SettingsManager(SharedPreferences sharedPreferences) {
+        
+        this.sharedPreferences = sharedPreferences;
     }
 
     public SortType getSortType() {
-        return m_SortType;
+        int sortTypeId = sharedPreferences.getInt(PREFERENCE_SORT_TYPE, SortType.LAST_EDIT_TIME.id);
+        return SortType.fromId(sortTypeId);
     }
 
-    private void setSortType(SortType sortType) {
-        m_SortType = sortType;
+    public void setSortType(SortType sortType) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(PREFERENCE_SORT_TYPE, sortType.id);
+        editor.apply();
     }
 
     public List<Color> getFilterColors() {
-        return m_FilterColors;
-    }
-
-    public void addFilterColors(Color color) {
-        m_FilterColors.add(color);
-    }
-    public void removeFilterColors(Color color) {
-        m_FilterColors.remove(color);
+        return new ArrayList<>(0);
     }
 }

@@ -9,8 +9,8 @@ public final class Constants {
     public static final String COLOR_PICK_INTENT_KEY = "colorHue";
     public static final String LINK_NOTE_INTENT_KEY = "noteID";
 
-    public static final String SORT_TYPE_CREATION_TIME = "sortCreation";
-    public static final String SORT_TYPE_LAST_EDITED_TIME = "sortLastEdited";
-
     public static final int NUMBER_OF_COLORS = 6;
+    
+    public static final String GENERAL_PREFERENCES_NAME = "generalSettings";
+    public static final String PREFERENCE_SORT_TYPE = "sortType";
 }

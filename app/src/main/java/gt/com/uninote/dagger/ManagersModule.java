@@ -1,5 +1,7 @@
 package gt.com.uninote.dagger;
 
+import android.content.SharedPreferences;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -9,14 +11,7 @@ import gt.com.uninote.Models.NoteManager;
 import gt.com.uninote.Models.SettingsManager;
 
 @Module
-public class ManagersModule
-{
-    @Provides
-    @Singleton
-    SettingsManager provideSettingsManager(FileIO fileIO)
-    {
-        return new SettingsManager(fileIO);
-    }
+public class ManagersModule {
 
     @Provides
     @Singleton
