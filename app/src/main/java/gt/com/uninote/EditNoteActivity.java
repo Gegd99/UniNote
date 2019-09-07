@@ -670,18 +670,19 @@ public class EditNoteActivity extends AppCompatActivity {
      * Handles what should be visible.
      * @param typeID either EDIT_NOTE_TYPE_ID or PREVIEW_NOTE_TYPE_ID
      */
-    private void setMode(int typeID)
-    {
-        if(typeID == EDIT_NOTE_TYPE_ID)
-        {
+    private void setMode(int typeID) {
+        
+        if (typeID == EDIT_NOTE_TYPE_ID) {
+            
             noteTitleEditText.setText(note.getNoteMeta().getTitle());
             noteEditText.setText(note.getNoteContent().getText());
+            noteEditText.requestFocus();
             
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             bottomSheetFAB.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+            
+        } else {
+            
             noteTitleTextView.setText(note.getNoteMeta().getTitle());
 
             String htmlString = getHTMLFromMarkdown(note.getNoteContent().getText());
