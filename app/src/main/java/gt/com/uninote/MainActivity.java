@@ -13,6 +13,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -248,6 +249,11 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Deleted note", Snackbar.LENGTH_LONG);
         snackbar.setAction("UNDO", v -> undoDelete());
         snackbar.show();
+    }
+
+    @Override
+    public void onNoteLongClick() {
+        Toast.makeText(this, "Swipe to delete a note", Toast.LENGTH_SHORT).show();
     }
 
     private void undoDelete()

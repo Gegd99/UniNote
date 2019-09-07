@@ -131,4 +131,9 @@ public class LinkNoteActivity extends AppCompatActivity implements OnNoteListene
     public void onNoteSwipe(int position) {
         return;
     }
+
+    @Override
+    public void onNoteLongClick() {
+        return;
+    }
 }
