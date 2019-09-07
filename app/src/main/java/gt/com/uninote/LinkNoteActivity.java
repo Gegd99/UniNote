@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,6 +22,9 @@ import gt.com.uninote.Models.Note;
 import gt.com.uninote.Models.NoteManager;
 import gt.com.uninote.dagger.ManagersComponent;
 
+import static gt.com.uninote.statics.Constants.LINK_NOTE_INTENT_KEY;
+import static gt.com.uninote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
+
 public class LinkNoteActivity extends AppCompatActivity implements OnNoteListener {
 
     private Toolbar mToolbar;
@@ -31,6 +35,8 @@ public class LinkNoteActivity extends AppCompatActivity implements OnNoteListene
     Managers m_Managers;
     private NoteManager m_NoteManager;
 
+    private Note m_CurrentNote;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +46,22 @@ public class LinkNoteActivity extends AppCompatActivity implements OnNoteListene
 
         initNoteManager();
 
-        attachListeners();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null)
+        {
+            int noteId = extras.getInt(MAIN_EDIT_INTENT_NOTE_ID_KEY);
+
+            m_CurrentNote = m_NoteManager.getById(noteId);
+
+            attachListeners();
+        }
+        else
+        {
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_CANCELED, returnIntent);
+            finish();
+        }
+
     }
 
     /**
@@ -67,7 +88,8 @@ public class LinkNoteActivity extends AppCompatActivity implements OnNoteListene
     private void attachListeners()
     {
         //Setup RecyclerView
-        List<Note> notes = m_NoteManager.getNotes();
+        List<Note> notes = new ArrayList<>(m_NoteManager.getNotes());
+        notes.remove(m_CurrentNote);
         mAdapter = new NotesRecyclerViewAdapter(notes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
@@ -99,7 +121,8 @@ public class LinkNoteActivity extends AppCompatActivity implements OnNoteListene
     @Override
     public void onNoteClick(int position) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("position", position);
+        Note selectedNote = m_NoteManager.getNotes().get(position);
+        returnIntent.putExtra(LINK_NOTE_INTENT_KEY, selectedNote.getNoteMeta().getNoteId());
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

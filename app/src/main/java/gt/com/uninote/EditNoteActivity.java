@@ -371,9 +371,8 @@ public class EditNoteActivity extends AppCompatActivity {
         b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
         b.addButton(R.drawable.icon_format_code, "Code", view -> surroundWithElements(noteEditText, "```lang-", "\n```"));
         b.addButton(R.drawable.icon_format_link_note, "Note", view -> {
-            //todo: implement inserting note dialogue
-            Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, LinkNoteActivity.class);
+            intent.putExtra("noteId", note.getNoteMeta().getNoteId());
             startActivityForResult(intent, requestCodeLinkNote);
         });
     }
@@ -631,6 +630,12 @@ public class EditNoteActivity extends AppCompatActivity {
         if (requestCode == requestCodeLinkNote && resultCode == RESULT_OK) {
 
             int noteId = data.getIntExtra(LINK_NOTE_INTENT_KEY, -1);
+            Note linkedNote = m_NoteManager.getById(noteId);
+            String noteTitle = linkedNote.getNoteMeta().getTitle();
+
+            String textToInsert = String.format("[%s](%d)", noteTitle.isEmpty() ? "unnamed" : noteTitle, noteId);
+
+            surroundWithElements(noteEditText, textToInsert, "");
         }
     }
     
