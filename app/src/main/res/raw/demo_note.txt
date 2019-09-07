@@ -40,9 +40,10 @@ Put the actual link anywhere (for example at the end of your document).
 You can also link [another note](12345) (but this example won't work).
 You can access this and another functions via the "<>"-Button when editing a note.
 
-
 There are also some small tricks, such as (C), (TM), an "Ellipsis" ... (triple dot), the en dash --, the em dash ---, and a separator:
 
 ---
 
 Thanks!
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Ewe_sheep_black_and_white.jpg/565px-Ewe_sheep_black_and_white.jpg)
