@@ -1,10 +1,10 @@
-package gt.com.gtnote.dagger;
+package gt.com.uninote.dagger;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gt.com.gtnote.EditNoteActivity;
-import gt.com.gtnote.MainActivity;
+import gt.com.uninote.EditNoteActivity;
+import gt.com.uninote.MainActivity;
 
 @Singleton
 @Component(modules = {ManagersModule.class, AndroidFileIOModule.class, ContextModule.class})

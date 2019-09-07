@@ -1,15 +1,12 @@
-package gt.com.gtnote.helper;
+package gt.com.uninote.helper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import gt.com.gtnote.Models.Note;
-import gt.com.gtnote.Models.SettingsManager;
-import gt.com.gtnote.Models.SubModels.Color;
-import gt.com.gtnote.Models.SubModels.SortType;
+import gt.com.uninote.Models.Note;
+import gt.com.uninote.Models.SubModels.Color;
+import gt.com.uninote.Models.SubModels.SortType;
 
 public class SortAndFilter
 {

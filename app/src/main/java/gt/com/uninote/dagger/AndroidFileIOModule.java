@@ -1,15 +1,14 @@
-package gt.com.gtnote.dagger;
+package gt.com.uninote.dagger;
 
 
 import android.content.Context;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import gt.com.gtnote.Interfaces.FileIO;
-import gt.com.gtnote.Models.AndroidFileIO;
+import gt.com.uninote.Interfaces.FileIO;
+import gt.com.uninote.Models.AndroidFileIO;
 
 @Module
 public class AndroidFileIOModule

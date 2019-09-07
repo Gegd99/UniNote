@@ -1,12 +1,12 @@
-package gt.com.gtnote.dagger;
+package gt.com.uninote.dagger;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import gt.com.gtnote.Interfaces.FileIO;
-import gt.com.gtnote.Models.NoteManager;
-import gt.com.gtnote.Models.SettingsManager;
+import gt.com.uninote.Interfaces.FileIO;
+import gt.com.uninote.Models.NoteManager;
+import gt.com.uninote.Models.SettingsManager;
 
 @Module
 public class ManagersModule

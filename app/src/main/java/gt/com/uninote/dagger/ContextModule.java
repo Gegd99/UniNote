@@ -1,4 +1,4 @@
-package gt.com.gtnote.dagger;
+package gt.com.uninote.dagger;
 
 import android.content.Context;
 
