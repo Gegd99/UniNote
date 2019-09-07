@@ -5,4 +5,6 @@ public interface OnNoteListener
     void onNoteClick(int position);
 
     void onNoteSwipe(int position);
+
+    void onNoteLongClick();
 }

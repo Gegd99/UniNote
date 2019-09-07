@@ -40,7 +40,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
         mOnNoteListener = onNoteListener;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener
+    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener
     {
         TextView title;
         TextView description;
@@ -58,11 +58,18 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             this.onNoteListener = onNoteListener;
 
             noteView.setOnClickListener(this);
+            noteView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             onNoteListener.onNoteClick(getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            onNoteListener.onNoteLongClick();
+            return true;
         }
     }
 
