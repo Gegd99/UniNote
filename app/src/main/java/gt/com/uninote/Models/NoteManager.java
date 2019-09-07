@@ -97,7 +97,7 @@ public class NoteManager {
      */
     public Note createNote() {
         NoteMeta meta = new NoteMeta(
-                getLowestAvailableId(),
+                getAvailableId(),
                 "",
                 "",
                 defaultNoteColor,
@@ -110,20 +110,24 @@ public class NoteManager {
         return note;
     }
 
-    private int getLowestAvailableId() {
-        // assuming that notes are ordered by their ID (Note.getNoteId) (ascending)
-        int lowestId = 0;
-        for (Note note: notes) {
-            int id = note.getNoteMeta().getNoteId();
-            if (id > lowestId) {
-                return lowestId;
-            } else if (id == lowestId) {
-                lowestId = id + 1;
-            } else {
-                Log.w(TAG, "getLowestAvailableId: Strange ordering detected!");
+    /**
+     * @return the current unix time in seconds, or, if already taken, the next free integer after that
+     */
+    private int getAvailableId() {
+        int id = (int) (System.currentTimeMillis() / 1000);
+        boolean checkDoubles = true;
+        while (checkDoubles) {
+            checkDoubles = false;
+            for (Note note: notes) {
+                if (note.getNoteMeta().getNoteId() == id) {
+                    id++;
+                    checkDoubles = true;
+                    break;
+                }
             }
         }
-        return lowestId;
+        
+        return id;
     }
 
     /**
