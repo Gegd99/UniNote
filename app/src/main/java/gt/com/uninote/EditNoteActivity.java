@@ -48,6 +48,7 @@ import gt.com.uninote.dagger.ManagersComponent;
 
 import static gt.com.uninote.statics.Constants.COLOR_PICK_INTENT_KEY;
 import static gt.com.uninote.statics.Constants.EDIT_NOTE_TYPE_ID;
+import static gt.com.uninote.statics.Constants.LINK_NOTE_INTENT_KEY;
 import static gt.com.uninote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
 import static gt.com.uninote.statics.Constants.MAIN_EDIT_INTENT_TYPE_ID_KEY;
 import static gt.com.uninote.statics.Constants.PREVIEW_NOTE_TYPE_ID;
@@ -83,7 +84,9 @@ public class EditNoteActivity extends AppCompatActivity {
     private String syntaxHighlightingJavascriptSource;
     private String syntaxHighlightingCssSource;
     private String baseUrl = "uninote://uninote.com/";  // random prefix for all links to fix detection of link clicks
-    
+
+    private int requestCodeLinkNote = 1;
+
     // font scaling:
     private int currentFontSize = 24;
     private float requestedFontSize = currentFontSize;
@@ -368,8 +371,9 @@ public class EditNoteActivity extends AppCompatActivity {
         b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
         b.addButton(R.drawable.icon_format_code, "Code", view -> surroundWithElements(noteEditText, "```lang-", "\n```"));
         b.addButton(R.drawable.icon_format_link_note, "Note", view -> {
-            //todo: implement inserting note dialogue
-            Toast.makeText(EditNoteActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LinkNoteActivity.class);
+            intent.putExtra("noteId", note.getNoteMeta().getNoteId());
+            startActivityForResult(intent, requestCodeLinkNote);
         });
     }
     
@@ -609,6 +613,7 @@ public class EditNoteActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /*
         if (requestCode == 1 && resultCode == RESULT_OK) {  // user picked a color
             
             // get color from intent
@@ -620,6 +625,17 @@ public class EditNoteActivity extends AppCompatActivity {
             
             // update UI
             onNoteColorChanged();
+        }
+        */
+        if (requestCode == requestCodeLinkNote && resultCode == RESULT_OK) {
+
+            int noteId = data.getIntExtra(LINK_NOTE_INTENT_KEY, -1);
+            Note linkedNote = m_NoteManager.getById(noteId);
+            String noteTitle = linkedNote.getNoteMeta().getTitle();
+
+            String textToInsert = String.format("[%s](%d)", noteTitle.isEmpty() ? "unnamed" : noteTitle, noteId);
+
+            surroundWithElements(noteEditText, textToInsert, "");
         }
     }
     
