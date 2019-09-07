@@ -493,12 +493,7 @@ public class EditNoteActivity extends AppCompatActivity {
                         openLinkedNote(linkedNote);
         
                     } else {
-                        //todo: get align from clicked link as default title
-                        Log.d(TAG, String.format(
-                                "handleUrl: create non-existent linked note #%d",
-                                noteId
-                        ));
-                        //todo: prompt to create note
+                        Toast.makeText(this, "The linked note was deleted", Toast.LENGTH_SHORT).show();
                     }
                 } else {  // this note is already shown here
                     Toast.makeText(this, "This note is already here.", Toast.LENGTH_SHORT).show();
