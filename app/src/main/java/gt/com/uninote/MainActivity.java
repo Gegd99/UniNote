@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         attachListeners();
         
         if (m_NoteManager.isFirstLaunch()) {
-            generateDemoNote();
+            ActivityUtils.generateDemoNote(m_NoteManager, getResources());
         }
     }
 
@@ -99,23 +99,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mRecyclerView.setAdapter(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((NotesRecyclerViewAdapter)mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
-    }
-    
-    private void generateDemoNote() {
-        Note note = m_NoteManager.createNote();
-        NoteMeta meta = note.getNoteMeta();
-        meta.setColor(Color.GREEN);
-        String text = ActivityUtils.readRawTextFile(R.raw.demo_note, getResources());
-        String title = getResources().getString(R.string.demo_note_title);
-        String preview = getResources().getString(R.string.demo_note_preview);
-        note.getNoteContent().setText(text);
-        meta.setTitle(title);
-        meta.setPreviewNoteContent(preview);
-        try {
-            m_NoteManager.save(note);
-        } catch (JSONException e) {
-            Log.e(TAG, "An error occured while saving the demo file", e);
-        }
     }
 
     private void testSettingsManager()
