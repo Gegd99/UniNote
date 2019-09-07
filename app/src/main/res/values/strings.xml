@@ -2,6 +2,8 @@
     <string name="app_name">Uni Note</string>
     <string name="action_settings">Settings</string>
     <string name="double_tap_to_edit">double tap to edit</string>
+    <string name="demo_note_title">Demo</string>
+    <string name="demo_note_preview">How to Format Your Notes</string>
     <string name="note_webview_css">
 
         body {

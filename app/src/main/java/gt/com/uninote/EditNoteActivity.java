@@ -45,6 +45,7 @@ import gt.com.uninote.Models.NoteMeta;
 import gt.com.uninote.Models.SubModels.Color;
 import gt.com.uninote.Models.TextEditOperations;
 import gt.com.uninote.dagger.ManagersComponent;
+import gt.com.uninote.helper.ActivityUtils;
 
 import static gt.com.uninote.statics.Constants.COLOR_PICK_INTENT_KEY;
 import static gt.com.uninote.statics.Constants.EDIT_NOTE_TYPE_ID;
@@ -104,8 +105,8 @@ public class EditNoteActivity extends AppCompatActivity {
         }
     
         cssStyleSource = getString(R.string.note_webview_css);
-        syntaxHighlightingJavascriptSource = readRawTextFile(R.raw.prism_js);
-        syntaxHighlightingCssSource = readRawTextFile(R.raw.prism_css);
+        syntaxHighlightingJavascriptSource = ActivityUtils.readRawTextFile(R.raw.prism_js, getResources());
+        syntaxHighlightingCssSource = ActivityUtils.readRawTextFile(R.raw.prism_css, getResources());
 
         findViews();
         buildBottomSheet();
@@ -762,28 +763,6 @@ public class EditNoteActivity extends AppCompatActivity {
                 noteViewLayout.setVisibility(View.VISIBLE);
                 noteEditLayout.setVisibility(View.GONE);
                 break;
-        }
-    }
-    
-    /**
-     * Do not call this before Activity.onCreate()
-     * @param resourceId
-     * @return
-     */
-    private String readRawTextFile(int resourceId) {
-        try (InputStream in = getResources().openRawResource(resourceId)) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder builder = new StringBuilder();
-            String line = reader.readLine();
-            while (line != null) {
-                builder.append(line);
-                builder.append("\n");
-                line = reader.readLine();
-            }
-            return builder.toString();
-        } catch (IOException e) {
-            Log.e(TAG, "readRawTextFile: error while reading resource of id="+resourceId, e);
-            return "";
         }
     }
     
