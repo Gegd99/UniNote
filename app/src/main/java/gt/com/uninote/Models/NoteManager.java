@@ -145,7 +145,6 @@ public class NoteManager {
     }
     
     public Note getById(int noteId) {
-        // TODO: do a binary search? (but then LinkedList is wrong data structure, but LinkedList is good for inserting...)
         for (Note note: notes) {
             if (note.getNoteMeta().getNoteId() == noteId) {
                 return note;

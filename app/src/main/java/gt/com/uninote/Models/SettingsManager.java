@@ -46,8 +46,6 @@ public class SettingsManager
 
     private void loadSettings() throws JSONException
     {
-        //TODO:Implement
-
         //load SortType
         m_SortType = SortType.LAST_EDIT_TIME;
     }

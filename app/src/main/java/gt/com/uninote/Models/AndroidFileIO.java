@@ -66,7 +66,7 @@ public class AndroidFileIO implements FileIO
         FileOutputStream fos = null;
         try {
             fos = mContextWrapper.openFileOutput(filename, MODE_PRIVATE);
-            fos.write(source.getBytes());// todo: maybe use source.getBytes("utf-8")?
+            fos.write(source.getBytes());
 
         } catch (IOException e) {
             e.printStackTrace();
