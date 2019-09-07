@@ -371,9 +371,15 @@ public class EditNoteActivity extends AppCompatActivity {
         b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
         b.addButton(R.drawable.icon_format_code, "Code", view -> surroundWithElements(noteEditText, "```lang-", "\n```"));
         b.addButton(R.drawable.icon_format_link_note, "Note", view -> {
-            Intent intent = new Intent(this, LinkNoteActivity.class);
-            intent.putExtra("noteId", note.getNoteMeta().getNoteId());
-            startActivityForResult(intent, requestCodeLinkNote);
+            if (m_NoteManager.getNotes().size() == 1)
+            {
+                Toast.makeText(this, "This is your only note", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Intent intent = new Intent(this, LinkNoteActivity.class);
+                intent.putExtra("noteId", note.getNoteMeta().getNoteId());
+                startActivityForResult(intent, requestCodeLinkNote);
+            }
         });
     }
     
