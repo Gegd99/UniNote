@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GTNote</string>
+    <string name="app_name">Uni Note</string>
     <string name="action_settings">Settings</string>
     <string name="double_tap_to_edit">double tap to edit</string>
     <string name="note_webview_css">

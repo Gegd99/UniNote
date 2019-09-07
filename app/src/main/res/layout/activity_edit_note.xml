@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="gt.com.gtnote.EditNoteActivity">
+    tools:context="gt.com.uninote.EditNoteActivity">
 
     <include layout="@layout/edit_note_activity_content" />
 

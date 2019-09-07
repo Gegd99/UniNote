@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "gt.com.gtnote"
+        applicationId "gt.com.uninote"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
