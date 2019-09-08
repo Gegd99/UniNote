@@ -1,6 +1,9 @@
 package gt.com.uninote;
 
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,10 +16,13 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private static final String TAG = "GTNOTE";
 
     private CoordinatorLayout mCoordinatorLayout;
+    private LinearLayout mFilterLinearLayout;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private List<Note> mFilteredAndSortedNotes;
+    private List<Color> m_FilterColors = new ArrayList<>();
 
     @Inject Managers m_Managers;
     private NoteManager m_NoteManager;
@@ -78,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     {
         //Layout
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+        mFilterLinearLayout = findViewById(R.id.linear_layout_filter);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -92,8 +101,10 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         //ButtonListener for creating a new note
         mFab.setOnClickListener(view -> createNewNote());
 
+        initFilterLayout();
+
         //Setup RecyclerView
-        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType());
         mAdapter = new NotesRecyclerViewAdapter(mFilteredAndSortedNotes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
@@ -102,9 +113,48 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
+    private void initFilterLayout() {
+        Color[] allColors = Color.getAllNormal();
+
+        for (Color color: allColors) {
+            ImageView image = new ImageView(this);
+
+            image.setPadding(5,5,5,5);
+            int fullColor = android.graphics.Color.rgb(color.red, color.green, color.blue);
+            int greyedColor = android.graphics.Color.rgb(color.red / 2, color.green / 2, color.blue / 2);
+
+            image.setImageResource(R.drawable.color_bubble);
+
+            if(m_FilterColors.contains(color))
+            {
+                image.setColorFilter(fullColor, PorterDuff.Mode.ADD);
+            }
+            else
+            {
+                image.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
+            }
+
+            image.setOnClickListener(view -> {
+                if(m_FilterColors.contains(color))
+                {
+                    m_FilterColors.remove(color);
+                    image.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
+                }
+                else
+                {
+                    m_FilterColors.add(color);
+                    image.setColorFilter(fullColor, PorterDuff.Mode.ADD);
+                }
+                updateFilteredAndSortedNotes();
+            });
+
+            mFilterLinearLayout.addView(image);
+        }
+    }
+
     private void updateFilteredAndSortedNotes()
     {
-        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_SettingsManager.getFilterColors(), m_SettingsManager.getSortType());
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType());
         ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
     }
 
