@@ -8,8 +8,8 @@
     <string name="demo_note_preview">How to Format Your Notes</string>
     <string name="generate_demo_note_button_text">Generate Demo Note</string>
     <string name="generate_demo_note_button_confirmation">Generated Demo Note</string>
-    <string name="sort_type_creation_time">by Creation Time</string>
-    <string name="sort_type_edit_time">by Last Edit Time</string>
+    <string name="sort_type_creation_time">by creation time</string>
+    <string name="sort_type_edit_time">by last edit time</string>
     <string name="note_webview_css">
 
         body {

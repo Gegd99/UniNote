@@ -1,6 +1,5 @@
 package gt.com.uninote;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +19,6 @@ import gt.com.uninote.dagger.ManagersComponent;
 import gt.com.uninote.helper.ActivityUtils;
 
 import static gt.com.uninote.statics.Constants.GENERAL_PREFERENCES_NAME;
-import static gt.com.uninote.statics.Constants.PREFERENCE_SORT_TYPE;
 
 public class GeneralSettingsActivity extends AppCompatActivity {
     
