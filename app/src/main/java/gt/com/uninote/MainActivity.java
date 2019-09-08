@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private void attachListeners() {
         //ButtonListener for creating a new note
         mFab.setOnClickListener(view -> createNewNote());
-
+        fillFilterColors();
         initFilterLayout();
 
         //Setup RecyclerView
@@ -123,10 +123,15 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private void initFilterLayout() {
+    private void fillFilterColors()
+    {
         Color[] allColors = Color.getAllNormal();
         m_FilterColors.addAll(Arrays.asList(allColors));
-        for (Color color: allColors) {
+    }
+
+    private void initFilterLayout() {
+
+        for (Color color: Color.getAllNormal()) {
             ImageView image = new ImageView(this);
 
             image.setPadding(5,5,5,5);
@@ -151,13 +156,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
                     {
                         m_FilterColors = new ArrayList<>();
                         m_FilterColors.add(color);
-                        for (int i = 0; i < mFilterLinearLayout.getChildCount(); i++)
-                        {
-                            ImageView tmpImage = (ImageView)mFilterLinearLayout.getChildAt(i);
-                            if(!tmpImage.equals(image)) {
-                                tmpImage.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
-                            }
-                        }
+                        mFilterLinearLayout.removeAllViews();
+                        initFilterLayout();
                     }
                     else
                     {
@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
                     if (m_FilterColors.isEmpty())
                     {
                         mFilterLinearLayout.removeAllViews();
+                        fillFilterColors();
                         initFilterLayout();
                     }
                 }
@@ -185,59 +186,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     private void updateFilteredAndSortedNotes() {
         mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType(), m_TextToSearch);
         ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
-    }
-
-    private String test() throws JSONException {
-
-        String titleString = "Hello World";
-        String contentString = "Einen schönen guten Morgen!";
-
-        // create a NoteManager instance for this test
-        NoteManager noteManager = new NoteManager(new AndroidFileIO(this));
-
-        Note note = noteManager.createNote();
-        NoteMeta meta = note.getNoteMeta();
-        NoteContent content = note.getNoteContent();
-
-        // set data
-        meta.setColor(Color.BLUE);
-        meta.setTitle(titleString);
-        content.setText(contentString);
-
-        // write to file
-        noteManager.save(note);
-
-        // remember id
-        int id = meta.getNoteId();
-
-        // create another NoteManager instance
-        noteManager = new NoteManager(new AndroidFileIO(this));
-
-        // get note instance and read content from file
-        note = noteManager.getById(id);
-        if (note != null) {
-            String loadedContentString = note.getNoteContent().getText();  // reads from file
-
-            if (loadedContentString.equals(contentString)) {
-                return "Test was successfull: contents match!";
-            }
-
-            if (loadedContentString.contains(contentString)) {
-                return "Test was successfull: contents match not fully but string is contained (probably due to formatting).";
-            }
-
-            return "Test failed: loaded content is: "+loadedContentString;
-        }
-        else {
-            int length = 0;
-            for (Note n : noteManager.getAll()) {
-                length++;
-            }
-            return String.format(
-                    "Test failed: note with same id could not be found (notes: %d)",
-                    length
-            );
-        }
     }
 
     /**
