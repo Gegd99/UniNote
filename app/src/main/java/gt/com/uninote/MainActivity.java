@@ -32,6 +32,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         //Layout
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         mFilterLinearLayout = findViewById(R.id.linear_layout_filter);
+        mFilterLinearLayout.setVisibility(View.GONE);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private void initFilterLayout() {
         Color[] allColors = Color.getAllNormal();
-
+        m_FilterColors.addAll(Arrays.asList(allColors));
         for (Color color: allColors) {
             ImageView image = new ImageView(this);
 
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
             image.setImageResource(R.drawable.color_bubble);
 
-            if(m_FilterColors.contains(color))
+            if (m_FilterColors.contains(color))
             {
                 image.setColorFilter(fullColor, PorterDuff.Mode.ADD);
             }
@@ -147,8 +149,28 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
             image.setOnClickListener(view -> {
                 if(m_FilterColors.contains(color))
                 {
-                    m_FilterColors.remove(color);
-                    image.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
+                    if (m_FilterColors.size() == Color.getAllNormal().length)
+                    {
+                        m_FilterColors = new ArrayList<>();
+                        m_FilterColors.add(color);
+                        for (int i = 0; i < mFilterLinearLayout.getChildCount(); i++)
+                        {
+                            ImageView tmpImage = (ImageView)mFilterLinearLayout.getChildAt(i);
+                            if(!tmpImage.equals(image)) {
+                                tmpImage.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        m_FilterColors.remove(color);
+                        image.setColorFilter(greyedColor, PorterDuff.Mode.ADD);
+                    }
+                    if (m_FilterColors.isEmpty())
+                    {
+                        mFilterLinearLayout.removeAllViews();
+                        initFilterLayout();
+                    }
                 }
                 else
                 {
@@ -160,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
             mFilterLinearLayout.addView(image);
         }
-        mFilterLinearLayout.setVisibility(View.GONE);
     }
 
     private void updateFilteredAndSortedNotes()
