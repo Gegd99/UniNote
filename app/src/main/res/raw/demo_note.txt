@@ -12,10 +12,10 @@ A list:
 
 ```lang-python
 
-# syntax highlighting is supported for a few languages
+# syntax highlighting
 
 def info():
-	print("Don't forget to put 'lang-' or 'language-' in the header!")
+	print("a" * 10)
 
 info()
 ```
