@@ -37,6 +37,20 @@
 
             </HorizontalScrollView>
 
+            <EditText
+                android:id="@+id/search_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailSubject"
+                android:layout_marginLeft="0dp"
+                android:paddingVertical="4dp"
+                android:paddingLeft="12dp"
+                android:fontFamily="monospace"
+                android:textSize="24sp"
+                android:textColor="@color/textColor"
+                android:background="@color/colorTransparent"
+                android:hint="Search"/>
+
         </android.support.design.widget.AppBarLayout>
 
 

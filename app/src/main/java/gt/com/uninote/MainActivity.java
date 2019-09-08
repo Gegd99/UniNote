@@ -14,10 +14,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -55,12 +58,14 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private CoordinatorLayout mCoordinatorLayout;
     private LinearLayout mFilterLinearLayout;
+    private EditText mSearchEditText;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private List<Note> mFilteredAndSortedNotes;
     private List<Color> m_FilterColors = new ArrayList<>();
+    private String m_TextToSearch = "";
 
     @Inject Managers m_Managers;
     private NoteManager m_NoteManager;
@@ -89,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         //Layout
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         mFilterLinearLayout = findViewById(R.id.linear_layout_filter);
+        //EditText
+        mSearchEditText = findViewById(R.id.search_edit_text);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -105,8 +112,26 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
         initFilterLayout();
 
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                m_TextToSearch = s.toString();
+                updateFilteredAndSortedNotes();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                return;
+            }
+        });
+
         //Setup RecyclerView
-        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType());
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType(), m_TextToSearch);
         mAdapter = new NotesRecyclerViewAdapter(mFilteredAndSortedNotes, this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
@@ -157,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private void updateFilteredAndSortedNotes()
     {
-        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType());
+        mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType(), m_TextToSearch);
         ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
     }
 
@@ -288,6 +313,16 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
         else {
             mFilterLinearLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void changeSearchVisibility()
+    {
+        if (mSearchEditText.getVisibility() == View.GONE){
+            mSearchEditText.setVisibility(View.VISIBLE);
+        }
+        else {
+            mSearchEditText.setVisibility(View.GONE);
         }
     }
 

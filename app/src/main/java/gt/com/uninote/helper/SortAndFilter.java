@@ -10,9 +10,10 @@ import gt.com.uninote.Models.SubModels.SortType;
 
 public class SortAndFilter
 {
-    public static List<Note> sortAndFilterList(List<Note> notes, List<Color> colorToFilterBy, SortType sortType)
+    public static List<Note> sortAndFilterList(List<Note> notes, List<Color> colorToFilterBy, SortType sortType, String textToSearch)
     {
         notes = filterList(notes, colorToFilterBy);
+        notes = searchList(notes, textToSearch);
         notes = sortList(notes, sortType);
 
         return notes;
@@ -28,6 +29,23 @@ public class SortAndFilter
         for (Note note : notes)
         {
             if (colorToFilterBy.contains(note.getNoteMeta().getColor()))
+            {
+                filteredNotes.add(note);
+            }
+        }
+        return filteredNotes;
+    }
+
+    private static List<Note> searchList(List<Note> notes, String textToSearch) {
+        if(textToSearch.isEmpty())
+            return notes;
+
+        List<Note> filteredNotes = new ArrayList<>();
+
+        textToSearch = textToSearch.toLowerCase();
+        for (Note note : notes)
+        {
+            if (note.getNoteMeta().getTitle().toLowerCase().contains(textToSearch) || note.getNoteContent().getText().toLowerCase().contains(textToSearch))
             {
                 filteredNotes.add(note);
             }
