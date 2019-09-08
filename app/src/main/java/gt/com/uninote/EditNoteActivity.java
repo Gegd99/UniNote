@@ -119,20 +119,14 @@ public class EditNoteActivity extends AppCompatActivity {
             note = m_NoteManager.getById(noteId);
     
             // set proper activity layout
-            if (type == EDIT_NOTE_TYPE_ID || type == PREVIEW_NOTE_TYPE_ID)
-            {
-                Log.d(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
-
+            if (type == EDIT_NOTE_TYPE_ID || type == PREVIEW_NOTE_TYPE_ID) {
                 setMode(type);
             }
-            else
-            {
-                Log.w(TAG, "opened EditNoteActivity with type="+type+", id="+noteId);
+            else {
                 setTitle("Note");
             }
         }
         else {
-            Log.w(TAG, "opened EditNoteActivity without any extras");
             setTitle("Note");
         }
     
@@ -217,13 +211,8 @@ public class EditNoteActivity extends AppCompatActivity {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {
 
-                    Log.d(TAG, "onDoubleTap: switch to edit mode");
-
                     // go to edit mode
                     setMode(EDIT_NOTE_TYPE_ID);
-
-                    //TODO: maybe use this later to position the cursor in edit text
-                    Log.d(TAG, "Raw event: " + event.getAction() + ", (" + event.getRawX() + ", " + event.getRawY() + ")");
 
                     return super.onDoubleTap(event);
                 }
@@ -498,11 +487,6 @@ public class EditNoteActivity extends AppCompatActivity {
                     Note linkedNote = getNoteById(noteId);
                     if (linkedNote != null) {
         
-                        Log.d(TAG, String.format(
-                                "handleUrl: open linked note #%d with title '%s'",
-                                noteId, linkedNote.getNoteMeta().getTitle()
-                        ));
-        
                         openLinkedNote(linkedNote);
         
                     } else {
@@ -511,16 +495,11 @@ public class EditNoteActivity extends AppCompatActivity {
                 } else {  // this note is already shown here
                     Toast.makeText(this, "This note is already here.", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                // ignore
-                Log.d(TAG, "handleUrl: note ID could not be parsed: '"+url+"'");
             }
             
         } else {  // assume the user linked a website
             
             url = addProtocolIfMissing(url);  // android decides based on the protocol which application will handle this
-    
-            Log.d(TAG, "handleUrl: open link: "+url);
             
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
@@ -814,7 +793,6 @@ public class EditNoteActivity extends AppCompatActivity {
             m_NoteManager.save(note);
             
         } catch (JSONException e) {
-            Log.e(TAG, "finished editing: saving note failed: ", e);
             Toast.makeText(this, "failed to save note", Toast.LENGTH_SHORT).show();
         }
 

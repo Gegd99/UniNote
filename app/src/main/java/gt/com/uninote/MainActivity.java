@@ -93,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     /**
      * Method in every activity, which finds all View-Elements by their Id
      */
-    private void findViews()
-    {
+    private void findViews() {
         //Layout
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         mFilterLinearLayout = findViewById(R.id.linear_layout_filter);
@@ -108,8 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mRecyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
     }
 
-    private void attachListeners()
-    {
+    private void attachListeners() {
         //ButtonListener for creating a new note
         mFab.setOnClickListener(view -> createNewNote());
 
@@ -184,8 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
     }
 
-    private void updateFilteredAndSortedNotes()
-    {
+    private void updateFilteredAndSortedNotes() {
         mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType(), m_TextToSearch);
         ((NotesRecyclerViewAdapter)mAdapter).updateNotes(mFilteredAndSortedNotes);
     }
@@ -220,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         note = noteManager.getById(id);
         if (note != null) {
             String loadedContentString = note.getNoteContent().getText();  // reads from file
-            Log.d(TAG, String.format("test: loaded content string: '''%s'''", loadedContentString));
 
             if (loadedContentString.equals(contentString)) {
                 return "Test was successfull: contents match!";
@@ -247,8 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     /**
      * Injects NoteManager and SettingsManager.
      */
-    public void injectManagers()
-    {
+    public void injectManagers() {
         ManagersComponent managersComponent = ((ApplicationClass) getApplication()).getManagersComponent();
 
         managersComponent.inject(this);
@@ -256,10 +251,8 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         m_NoteManager = m_Managers.getNoteManager();
     }
 
-    private void createNewNote()
-    {
+    private void createNewNote() {
         Note createdNote = m_NoteManager.createNote();
-        Log.d(TAG, "created new note with id="+createdNote.getNoteMeta().getNoteId());
 
         Intent intent = new Intent(this, EditNoteActivity.class);
         intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, EDIT_NOTE_TYPE_ID);
@@ -268,8 +261,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         startActivity(intent);
     }
 
-    private void openExistingNote(Note note)
-    {
+    private void openExistingNote(Note note) {
         Intent intent = new Intent(this, EditNoteActivity.class);
         intent.putExtra(MAIN_EDIT_INTENT_TYPE_ID_KEY, PREVIEW_NOTE_TYPE_ID);
         //intent.putExtra("note", note);

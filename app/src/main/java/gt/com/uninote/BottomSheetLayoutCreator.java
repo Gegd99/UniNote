@@ -46,7 +46,6 @@ class BottomSheetLayoutCreator {
     void addButton(int drawableResourceId, @Nullable String text, @Nullable View.OnClickListener onClickListener) {
         
         if (currentFlexBox == null) {
-            Log.w(TAG, "addImageButton with text \""+text+"\", but currentFlexBox is null");
             return;
         }
     

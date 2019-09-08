@@ -37,7 +37,7 @@ public class NoteManager {
         try {
             loadAll();
         } catch (JSONException e) {
-            Log.e(TAG, "An error occurred while loading the notes:", e);
+            e.printStackTrace();
         }
     }
     
@@ -54,8 +54,6 @@ public class NoteManager {
 
         String allMetasString = fileIO.read(META_FILE_NAME);  // meta data of all notes is stored in one file (faster reading)
         JSONArray allMetas = new JSONArray(allMetasString);  // could throw JSONException
-
-        Log.d(TAG, String.format("Loaded %d metas from string '''%s'''", allMetas.length(), allMetasString));
 
         for (int i = 0; i < allMetas.length(); i++) {
 
@@ -173,7 +171,6 @@ public class NoteManager {
                 NoteMeta otherMeta = metaParser.loadMeta(allMetas.getJSONObject(i));
 
                 if(otherMeta.getNoteId() == meta.getNoteId()) {
-                    Log.d(TAG, String.format("Deleting meta: '''%s'''", allMetas.get(i)));
                     allMetas.remove(i);
                     notes.remove(note);
                     mDeletedNote = note;
@@ -183,13 +180,10 @@ public class NoteManager {
 
             allMetasString = allMetas.toString();
 
-            Log.d(TAG, String.format("saveMetas after deleting: '''%s'''", allMetasString));
-
             fileIO.write(META_FILE_NAME, allMetasString);
 
-        }
-        catch (JSONException ex) {
-            Log.w(TAG, ex.getMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -203,9 +197,8 @@ public class NoteManager {
         try{
             save(mDeletedNote);
             notes.add(mDeletedNote);
-        }
-        catch (JSONException ex) {
-            Log.w(TAG, ex.getMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
     
@@ -227,7 +220,7 @@ public class NoteManager {
     private void saveMeta(NoteMeta meta) throws JSONException {
         
         if (!fileIO.fileExists(META_FILE_NAME)) {
-            Log.w(TAG, "saveMeta: Meta file was deleted since NoteManager instance was created.");
+            // should actually not happen
             createMetaFile();
         }
 
@@ -253,9 +246,8 @@ public class NoteManager {
                     break;
                 }
             }
-            catch (JSONException e)
-            {
-                Log.d(TAG, "A NoteMeta object is missing an entry: ", e);
+            catch (JSONException e) {
+                // a NoteMeta object is missing an entry
                 break;
             }
         }
@@ -266,8 +258,6 @@ public class NoteManager {
         }
 
         allMetasString = allMetas.toString();
-
-        Log.d(TAG, String.format("saveMetas: '''%s'''", allMetasString));
 
         fileIO.write(META_FILE_NAME, allMetasString);
     }

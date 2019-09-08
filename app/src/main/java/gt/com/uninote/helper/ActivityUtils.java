@@ -35,7 +35,7 @@ public class ActivityUtils {
             }
             return builder.toString();
         } catch (IOException e) {
-            Log.e(TAG, "readRawTextFile: error while reading resource of id="+resourceId, e);
+            e.printStackTrace();
             return "";
         }
     }
@@ -53,7 +53,7 @@ public class ActivityUtils {
         try {
             noteManager.save(note);
         } catch (JSONException e) {
-            Log.e(TAG, "An error occured while saving the demo file", e);
+            e.printStackTrace();
         }
     }
 }
