@@ -106,7 +106,7 @@ public class TextEditOperations {
     public String cutToRandomLength(String text, long seed) {
         
         random.setSeed(seed);
-        int minLength = random.nextInt(70) + 50;
+        int minLength = random.nextInt(70) + 80;
 
         return cutToReasonableLength(text, minLength, minLength + 20, 10);
     }
@@ -161,8 +161,12 @@ public class TextEditOperations {
             
             index++;
         }
-        
-        return text.substring(0, reasonableIndex + 1);
+        if(text.length() <= reasonableIndex + 1)
+            return text.substring(0, reasonableIndex + 1);
+        else
+            return text.substring(0, reasonableIndex + 1) + "…";
+
+
     }
     
     /**
