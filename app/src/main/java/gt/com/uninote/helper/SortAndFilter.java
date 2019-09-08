@@ -21,9 +21,6 @@ public class SortAndFilter
 
     public static List<Note> filterList(List<Note> notes, List<Color> colorToFilterBy)
     {
-        if (colorToFilterBy.isEmpty())
-            return notes;
-
         List<Note> filteredNotes = new ArrayList<>();
 
         for (Note note : notes)

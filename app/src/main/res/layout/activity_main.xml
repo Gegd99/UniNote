@@ -33,7 +33,8 @@
                     android:id="@+id/linear_layout_filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="5dp">
                 </LinearLayout>
 
             </HorizontalScrollView>
@@ -50,7 +51,6 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/notes_recycler_view"
                 android:clipToPadding="false"
-                android:padding="@dimen/note_in_list_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
