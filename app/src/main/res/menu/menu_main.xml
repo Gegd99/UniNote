@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="gt.com.uninote.MainActivity">
     <item
+        android:id="@+id/open_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/open_filter"
         android:icon="@drawable/icon_filter"
         android:title="@string/action_filter"

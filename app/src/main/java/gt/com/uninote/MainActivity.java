@@ -302,6 +302,9 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         else if (id == R.id.open_filter){
             changeFilterVisibility();
         }
+        else if (id == R.id.open_search){
+            changeSearchVisibility();
+        }
 
         return super.onOptionsItemSelected(item);
     }
