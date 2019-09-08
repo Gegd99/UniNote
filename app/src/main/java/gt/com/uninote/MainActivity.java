@@ -1,5 +1,7 @@
 package gt.com.uninote;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -11,6 +13,7 @@ import android.support.design.widget.Snackbar;
 import android.support.transition.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -18,6 +21,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -58,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
     private CoordinatorLayout mCoordinatorLayout;
     private LinearLayout mFilterLinearLayout;
-    private EditText mSearchEditText;
     private Toolbar mToolbar;
     private FloatingActionButton mFab;
     private RecyclerView mRecyclerView;
@@ -94,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         //Layout
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
         mFilterLinearLayout = findViewById(R.id.linear_layout_filter);
-        //EditText
-        mSearchEditText = findViewById(R.id.search_edit_text);
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -111,24 +112,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         mFab.setOnClickListener(view -> createNewNote());
 
         initFilterLayout();
-
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                return;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                m_TextToSearch = s.toString();
-                updateFilteredAndSortedNotes();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                return;
-            }
-        });
 
         //Setup RecyclerView
         mFilteredAndSortedNotes = sortAndFilterList(m_NoteManager.getNotes(), m_FilterColors, m_SettingsManager.getSortType(), m_TextToSearch);
@@ -284,7 +267,38 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.open_search);
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                m_TextToSearch = newText;
+                updateFilteredAndSortedNotes();
+                return false;
+            }
+        });
+
+        /*
+        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
+
+         searchView = null;
+        if (searchItem != null) {
+
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
+        }
+        */
+
         return true;
     }
 
@@ -302,9 +316,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         else if (id == R.id.open_filter){
             changeFilterVisibility();
         }
-        else if (id == R.id.open_search){
-            changeSearchVisibility();
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -316,16 +327,6 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         }
         else {
             mFilterLinearLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private void changeSearchVisibility()
-    {
-        if (mSearchEditText.getVisibility() == View.GONE){
-            mSearchEditText.setVisibility(View.VISIBLE);
-        }
-        else {
-            mSearchEditText.setVisibility(View.GONE);
         }
     }
 
