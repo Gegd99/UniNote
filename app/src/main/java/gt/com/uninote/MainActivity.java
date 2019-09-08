@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.transition.Visibility;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -16,6 +17,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -150,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
 
             mFilterLinearLayout.addView(image);
         }
+        mFilterLinearLayout.setVisibility(View.GONE);
     }
 
     private void updateFilteredAndSortedNotes()
@@ -271,8 +274,21 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, GeneralSettingsActivity.class));
         }
+        else if (id == R.id.open_filter){
+            changeFilterVisibility();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void changeFilterVisibility()
+    {
+        if (mFilterLinearLayout.getVisibility() == View.GONE){
+            mFilterLinearLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            mFilterLinearLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
