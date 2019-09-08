@@ -30,10 +30,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.markdown4j.Markdown4jProcessor;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
@@ -47,7 +44,6 @@ import gt.com.uninote.Models.TextEditOperations;
 import gt.com.uninote.dagger.ManagersComponent;
 import gt.com.uninote.helper.ActivityUtils;
 
-import static gt.com.uninote.statics.Constants.COLOR_PICK_INTENT_KEY;
 import static gt.com.uninote.statics.Constants.EDIT_NOTE_TYPE_ID;
 import static gt.com.uninote.statics.Constants.LINK_NOTE_INTENT_KEY;
 import static gt.com.uninote.statics.Constants.MAIN_EDIT_INTENT_NOTE_ID_KEY;
@@ -358,18 +354,18 @@ public class EditNoteActivity extends AppCompatActivity {
         );
     
         buildBottomSheetMarkdown(b);
-        buildBottomSheetLaTeX(b);
-        buildBottomSheetCodeSnippetsJava(b);
+        buildBottomSheetCodeSnippets(b);
     }
     
     private void buildBottomSheetMarkdown(BottomSheetLayoutCreator b) {
         b.beginCategory("Markdown");
         b.addButton(R.drawable.icon_format_bold, null, view -> surroundWithElements(noteEditText, "**", "**"));
         b.addButton(R.drawable.icon_format_italic, null, view -> surroundWithElements(noteEditText, "*", "*"));
+        b.addButton(R.drawable.icon_format_strikethrough, "Strikethrough", view -> surroundWithElements(noteEditText, "~~", "~~"));
         b.addButton(R.drawable.icon_format_bullet_list, "List", view -> surroundWithElements(noteEditText, "- ", ""));
         b.addButton(R.drawable.icon_format_headline, "Headline", view -> surroundWithElements(noteEditText, "# ", ""));
         b.addButton(R.drawable.icon_format_link_website, "Link", view -> surroundWithElements(noteEditText, "[", "](www.example.com)"));
-        b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", ""));
+        b.addButton(R.drawable.icon_format_quote, "Quote", view -> surroundWithElements(noteEditText, "> ", "\n> \n> "));
         b.addButton(R.drawable.icon_format_code, "Code", view -> surroundWithElements(noteEditText, "```lang-", "\n```"));
         b.addButton(R.drawable.icon_format_link_note, "Note", view -> {
             if (m_NoteManager.getNotes().size() == 1)
@@ -382,27 +378,30 @@ public class EditNoteActivity extends AppCompatActivity {
                 startActivityForResult(intent, requestCodeLinkNote);
             }
         });
+        b.addButton(R.drawable.icon_format_link_image, "Image from the Web", view -> surroundWithElements(noteEditText, "![](", ")"));
+        b.addButton(R.drawable.icon_format_line_separator, "Line Separator", view -> insertAtCursor(noteEditText, "\n\n---\n\n"));
+        b.addButton(R.drawable.icon_format_link_website, "Reference Link", view -> {
+            surroundWithElements(noteEditText, "[", "][1]");
+            noteEditText.getText().append("\n[1]: www.example.com");
+        });
     }
     
     /**
      * only as design demonstration
      * @param b
      */
-    private void buildBottomSheetLaTeX(BottomSheetLayoutCreator b) {
-        b.beginCategory("LaTeX");
-        b.addButton(R.drawable.icon_format_code, "Formula", null);
-        b.addButton(R.drawable.icon_format_link_website, "Math Stuff", null);
-    }
+    private void buildBottomSheetCodeSnippets(BottomSheetLayoutCreator b) {
+        b.beginCategory("Java");
+        b.addButton(R.drawable.icon_format_code, "Java Code Block", view -> surroundWithElements(noteEditText, "```lang-java", "\n```"));
+        b.addButton(R.drawable.icon_format_code, "System.out.println", view -> surroundWithElements(noteEditText, "System.out.println(", ");"));
+        b.addButton(R.drawable.icon_format_code, "for i", view -> surroundWithElements(noteEditText, "for (int i=0; i < ", "; i++ {\n    \n}"));
+        b.addButton(R.drawable.icon_format_code, "Class declaration", view -> surroundWithElements(noteEditText, "class ", " {\n    \n}"));
+        b.addButton(R.drawable.icon_format_code, "try, catch, finally", view -> surroundWithElements(noteEditText, "try {\n    ", "\n} catch (Exception e) {\n    e.printStackTrace();\n} finally {\n    \n}"));
     
-    /**
-     * only as design demonstration
-     * @param b
-     */
-    private void buildBottomSheetCodeSnippetsJava(BottomSheetLayoutCreator b) {
-        b.beginCategory("Code Snippets: Java");
-        b.addButton(R.drawable.icon_format_code, "for i", null);
-        b.addButton(R.drawable.icon_format_code, "try, catch, finally", null);
-        b.addButton(R.drawable.icon_format_code, "System.out.println", null);
+        b.beginCategory("Other Languages");
+        b.addButton(R.drawable.icon_format_code, "Python", view -> surroundWithElements(noteEditText, "```lang-python", "\n```"));
+        b.addButton(R.drawable.icon_format_code, "JavaScript", view -> surroundWithElements(noteEditText, "```lang-javascript", "\n```"));
+        b.addButton(R.drawable.icon_format_code, "C-Like", view -> surroundWithElements(noteEditText, "```lang-clike", "\n```"));
     }
     
     /**
@@ -456,6 +455,10 @@ public class EditNoteActivity extends AppCompatActivity {
                 editText.setSelection(cursorPosition, cursorPosition);
             }
         }
+    }
+    
+    private void insertAtCursor(EditText editText, String text) {
+        editText.getText().insert(editText.getSelectionEnd(), text);
     }
     
     /**

@@ -22,9 +22,9 @@ info()
 
 > This is a blockquote.
 > It can have multiple lines and it looks nice.
-> Avocado
-> Beetroot
-> Clementine
+> - Avocado
+> - Beetroot
+> - Clementine
 
 A [normal link to a website](www.example.com).
 
