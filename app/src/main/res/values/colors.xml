@@ -3,6 +3,7 @@
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#009688</color>
     <color name="colorAccent">#009688</color>
+    <color name="appBarColorAccent">#FF5722</color>
     <color name="textColor">#000000</color>
     <color name="colorNoteBackground">#FFFFFF</color>
     <color name="colorTransparent">#00FFFFFF</color>
