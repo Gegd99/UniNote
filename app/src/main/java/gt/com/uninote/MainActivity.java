@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnNoteListener {
         m_SettingsManager = new SettingsManager(getSharedPreferences(GENERAL_PREFERENCES_NAME, MODE_PRIVATE));
         attachListeners();
         
-        if (m_NoteManager.isFirstLaunch()) {
+        if (m_NoteManager.handleFirstLaunch()) {
             ActivityUtils.generateDemoNote(m_NoteManager, getResources());
         }
     }

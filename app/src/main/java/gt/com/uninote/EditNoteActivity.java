@@ -493,7 +493,7 @@ public class EditNoteActivity extends AppCompatActivity {
                         openLinkedNote(linkedNote);
         
                     } else {
-                        Toast.makeText(this, "The linked note was deleted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "The linked note does not exist", Toast.LENGTH_SHORT).show();
                     }
                 } else {  // this note is already shown here
                     Toast.makeText(this, "This note is already here.", Toast.LENGTH_SHORT).show();

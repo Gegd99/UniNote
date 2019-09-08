@@ -313,7 +313,15 @@ public class NoteManager {
         return defaultNoteColor;
     }
     
-    public boolean isFirstLaunch() {
-        return firstLaunch;
+    /**
+     * Sets firstLaunch to false.
+     * @return value of firstLaunch (before set to false)
+     */
+    public boolean handleFirstLaunch() {
+        if (firstLaunch) {
+            firstLaunch = false;
+            return true;
+        }
+        return false;
     }
 }
