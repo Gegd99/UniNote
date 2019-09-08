@@ -198,7 +198,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private void attachListeners()
     {
         // listener for touch events
-        View.OnTouchListener doubleTabEditListener = new View.OnTouchListener() {
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             
             // detect double tap
             private GestureDetector gestureDetector = new GestureDetector(EditNoteActivity.this, new GestureDetector.SimpleOnGestureListener() {
@@ -258,14 +258,16 @@ public class EditNoteActivity extends AppCompatActivity {
 
                 if (noteViewLayout.getVisibility() == View.VISIBLE) {  // just making sure... (probably not necessary)
                     gestureDetector.onTouchEvent(event);
-                    scaleGestureDetector.onTouchEvent(event);
+                    if (event.getPointerCount() > 1) {
+                        scaleGestureDetector.onTouchEvent(event);
+                    }
                 }
                 return false;
             }
         };
     
-        baseView.setOnTouchListener(doubleTabEditListener);
-        noteWebView.setOnTouchListener(doubleTabEditListener);  // for some reason baseView doesn't catch events on that WebView
+        baseView.setOnTouchListener(onTouchListener);
+        noteWebView.setOnTouchListener(onTouchListener);  // for some reason baseView doesn't catch events on that WebView
     
         AdapterView.OnItemSelectedListener colorSpinnerListener = new AdapterView.OnItemSelectedListener() {
     
