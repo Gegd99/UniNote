@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -64,6 +65,7 @@ public class GeneralSettingsActivity extends AppCompatActivity {
         generateDemoNoteButton.setOnClickListener(view -> {
             if (!demoNoteGenerated) {
                 ActivityUtils.generateDemoNote(m_NoteManager, getResources());
+                Toast.makeText(this, R.string.generate_demo_note_button_confirmation, Toast.LENGTH_SHORT).show();
                 demoNoteGenerated = true;
             }
         });
