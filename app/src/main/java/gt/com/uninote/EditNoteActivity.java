@@ -83,6 +83,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private String baseUrl = "uninote://uninote.com/";  // random prefix for all links to fix detection of link clicks
 
     private int requestCodeLinkNote = 1;
+    
+    private long lastLinkPressedTime = 0;
 
     // font scaling:
     private int currentFontSize = 24;
@@ -204,8 +206,12 @@ public class EditNoteActivity extends AppCompatActivity {
                 // this method only triggers when too much time passed for a double tap to happen
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
-                    Toast.makeText(EditNoteActivity.this, R.string.double_tap_to_edit, Toast.LENGTH_SHORT).show();
-                    return super.onSingleTapConfirmed(e);
+                    // make sure that no link was just clicked
+                    if (System.currentTimeMillis() - lastLinkPressedTime > 1000L) {
+                        Toast.makeText(EditNoteActivity.this, R.string.double_tap_to_edit, Toast.LENGTH_SHORT).show();
+                        return super.onSingleTapConfirmed(e);
+                    }
+                    return false;
                 }
     
                 @Override
@@ -294,6 +300,7 @@ public class EditNoteActivity extends AppCompatActivity {
             noteWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    lastLinkPressedTime = System.currentTimeMillis();
                     String url = request.getUrl().toString();
                     handleUrl(url);
                     return true;
@@ -304,6 +311,7 @@ public class EditNoteActivity extends AppCompatActivity {
             noteWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    lastLinkPressedTime = System.currentTimeMillis();
                     handleUrl(url);
                     return true;
                 }
